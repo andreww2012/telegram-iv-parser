@@ -3,13 +3,13 @@
     "host": "test.ru",
 
     "section": {
+      "pagePattern": "news/page/{0}.html",
       "firstPageUrl": "news",
-      "pattern": "news/page/{0}.html",
-      "selector": ""
+      "linkSelector": ""
     },
 
     "pagination": {
-      "lastPageSelector": "",
+      "totalNumberOfPagesSelector": "",
       "reversed": false,
       "enabled": true
     },
@@ -33,14 +33,19 @@
   "stats": {
     "pagesCount": 0,
     "fileGeneratedDate": 0,
-    "parsingDates": [1, 2, 3]
+    "parsingDates": [1552937372643, 1552937372642]
   },
 
   "pages": [
     {
       "num": 1,
-      "articles": ["article1", "article2"],
-      "parsingDates": [1, 2, 3]
+      "articles": [
+        {
+          "hash": "articleHash1",
+          "parsed": true
+        }
+      ],
+      "parsingDates": [1552937372643, 1552937372642]
     }
   ],
 
@@ -49,30 +54,32 @@
       {
         "name": "iframe",
         "count": 0,
-        "articles": ["article1", "article2"]
+        "articles": ["articleHash1", "articleHash2"]
       }
     ],
     "classes": [
       {
         "name": "test-class",
         "count": 0,
-        "articles": ["article1", "article2"]
+        "articles": ["articleHash1", "articleHash2"]
       }
     ],
     "attributes": [
       {
         "name": "data-test",
         "count": 0,
-        "articles": ["article1", "article2"]
+        "articles": ["articleHash1", "articleHash2"]
       }
     ]
   },
 
   "articles": [
     {
-      "url": "test1.html",
-      "fromPage": 1,
-      "parsingDates": [1, 2, 3]
+      "hash": "lGm8M6aggLbMjIHt",
+      "url": "/news/test/123456789.html",
+      "fromPage": 15,
+      "code": 200,
+      "parsingDates": [1552937372643, 1552937372642]
     }
   ]
 }

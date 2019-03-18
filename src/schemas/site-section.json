@@ -24,7 +24,7 @@
         "articles": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Article"
+            "$ref": "#/definitions/SiteSectionArticle"
           }
         }
       },
@@ -37,14 +37,20 @@
       ],
       "title": "SiteSection"
     },
-    "Article": {
+    "SiteSectionArticle": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "hash": {
+          "type": "string"
+        },
         "url": {
           "type": "string"
         },
         "fromPage": {
+          "type": "integer"
+        },
+        "code": {
           "type": "integer"
         },
         "parsingDates": {
@@ -55,11 +61,13 @@
         }
       },
       "required": [
+        "code",
         "fromPage",
+        "hash",
         "parsingDates",
         "url"
       ],
-      "title": "Article"
+      "title": "SiteSectionArticle"
     },
     "Options": {
       "type": "object",
@@ -142,7 +150,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "lastPageSelector": {
+        "totalNumberOfPagesSelector": {
           "type": "string"
         },
         "reversed": {
@@ -154,8 +162,8 @@
       },
       "required": [
         "enabled",
-        "lastPageSelector",
-        "reversed"
+        "reversed",
+        "totalNumberOfPagesSelector"
       ],
       "title": "Pagination"
     },
@@ -176,20 +184,20 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "pagePattern": {
+          "type": "string"
+        },
         "firstPageUrl": {
           "type": "string"
         },
-        "pattern": {
-          "type": "string"
-        },
-        "selector": {
+        "linkSelector": {
           "type": "string"
         }
       },
       "required": [
         "firstPageUrl",
-        "pattern",
-        "selector"
+        "linkSelector",
+        "pagePattern"
       ],
       "title": "Section"
     },
@@ -203,7 +211,7 @@
         "articles": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/PageArticle"
           }
         },
         "parsingDates": {
@@ -219,6 +227,23 @@
         "parsingDates"
       ],
       "title": "PageElement"
+    },
+    "PageArticle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hash": {
+          "type": "string"
+        },
+        "parsed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "hash",
+        "parsed"
+      ],
+      "title": "PageArticle"
     },
     "ParsingResults": {
       "type": "object",

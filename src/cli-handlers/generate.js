@@ -7,42 +7,22 @@ const fileStructureQuestions = [
   {
     name: 'host',
     message: 'Host name (test.ru, subdomain.example.com):',
+    validate(input) {
+      return !!input;
+    },
   },
 
   {
     name: 'sectionName',
-    message: 'Unique section name (only latin symbols or underscores):',
-  },
-
-  {
-    name: 'pagePattern',
-    message: 'Section pages pattern (like news/page/{0}.html):',
-  },
-
-  {
-    name: 'firstPagePattern',
-    message: 'If the first page is not available by this pattern, specify a different URL:',
-    default: '',
-  },
-
-  {
-    name: 'linkSelector',
-    message: 'Specify the link selector:',
-  },
-
-  {
-    name: 'paginationEnabled',
-    message: 'It is possible to paginate?',
-    type: 'confirm',
-    default: true,
+    message: 'Unique section name (latin symbols, hyphens and underscores):',
+    validate(input) {
+      return !!input;
+    },
   },
 
   {
     name: 'paginationLastPageSelector',
-    message: 'Specify the selector containing the last page:',
-    when({paginationEnabled}) {
-      return paginationEnabled;
-    },
+    message: 'Selector containing page count:',
   },
 
   {
@@ -50,14 +30,39 @@ const fileStructureQuestions = [
     message: 'If pagination reversed?',
     type: 'confirm',
     default: false,
-    when({paginationEnabled}) {
-      return paginationEnabled;
+  },
+
+  {
+    name: 'pagePattern',
+    message: 'Section pages pattern (news/page/{0}.html):',
+    validate(input) {
+      return input && input.includes('{0}');
+    },
+  },
+
+  {
+    name: 'firstPageUrl',
+    message: 'If the first page is not available by this pattern, specify a different URL for it (MUST SPECIFY WHEN PAGINATION IS REVERSED):',
+    default: '',
+    validate(input, {paginationReversed}) {
+      return !(paginationReversed && !input);
+    },
+  },
+
+  {
+    name: 'linkSelector',
+    message: 'Selector for article links:',
+    validate(input) {
+      return !!input;
     },
   },
 
   {
     name: 'articleBodySelector',
-    message: 'An article body selector:',
+    message: 'Selector for article body:',
+    validate(input) {
+      return !!input;
+    },
   },
 ];
 
@@ -81,9 +86,8 @@ function generateBasicFileStructure(answers) {
   const {
     host,
     pagePattern,
-    firstPagePattern,
+    firstPageUrl,
     linkSelector,
-    paginationEnabled,
     paginationLastPageSelector,
     paginationReversed,
     articleBodySelector,
@@ -94,15 +98,15 @@ function generateBasicFileStructure(answers) {
       host,
 
       section: {
-        firstPageUrl: firstPagePattern,
-        pattern: pagePattern,
-        selector: linkSelector,
+        pagePattern,
+        firstPageUrl,
+        linkSelector,
       },
 
       pagination: {
-        lastPageSelector: paginationLastPageSelector,
+        totalNumberOfPagesSelector: paginationLastPageSelector,
         reversed: paginationReversed,
-        enabled: paginationEnabled,
+        enabled: true,
       },
 
       page: {
@@ -152,12 +156,11 @@ exports.handleGenerate = ({folder = '.'}) => {
       const filename = generateFileName(answers);
 
       const filepath = path.join(path.normalize(folder), filename);
-      console.log(filename);
       const fileStructure = generateBasicFileStructure(answers);
 
       fs.writeFileSync(filepath, fileStructure);
 
-      console.log(`[created] ${filepath}`);
+      console.log(`[file created] ${filepath}`);
     })
     .catch(e => {
       console.log('An error occured:', e);

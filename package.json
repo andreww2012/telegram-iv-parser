@@ -19,8 +19,12 @@
   "homepage": "https://github.com/andreww2012/telegram-iv-parser#readme",
   "dependencies": {
     "ajv": "^6.10.0",
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.2",
     "inquirer": "^6.2.2",
-    "puppeteer": "^1.13.0",
+    "jsonfile": "^5.0.0",
+    "normalize-url": "^4.2.0",
+    "pretty-error": "^2.1.1",
     "yargs": "^13.2.2"
   },
   "devDependencies": {

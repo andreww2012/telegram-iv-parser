@@ -10,8 +10,8 @@ exports.commands = yargs
     handler: cliHandlers.generate,
   })
   .command({
-    command: 'parse <file>',
+    command: 'parse <filename>',
     aliases: ['start'],
-    desc: 'Start parsing process',
-    handlers: cliHandlers.parse,
+    desc: 'Starts parsing process',
+    handler: cliHandlers.parse,
   });
