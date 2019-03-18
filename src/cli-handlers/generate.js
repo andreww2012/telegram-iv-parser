@@ -1,0 +1,165 @@
+const fs = require('fs');
+const path = require('path');
+const inquirer = require('inquirer');
+const {validateSiteSectionSchema} = require('../validators');
+
+const fileStructureQuestions = [
+  {
+    name: 'host',
+    message: 'Host name (test.ru, subdomain.example.com):',
+  },
+
+  {
+    name: 'sectionName',
+    message: 'Unique section name (only latin symbols or underscores):',
+  },
+
+  {
+    name: 'pagePattern',
+    message: 'Section pages pattern (like news/page/{0}.html):',
+  },
+
+  {
+    name: 'firstPagePattern',
+    message: 'If the first page is not available by this pattern, specify a different URL:',
+    default: '',
+  },
+
+  {
+    name: 'linkSelector',
+    message: 'Specify the link selector:',
+  },
+
+  {
+    name: 'paginationEnabled',
+    message: 'It is possible to paginate?',
+    type: 'confirm',
+    default: true,
+  },
+
+  {
+    name: 'paginationLastPageSelector',
+    message: 'Specify the selector containing the last page:',
+    when({paginationEnabled}) {
+      return paginationEnabled;
+    },
+  },
+
+  {
+    name: 'paginationReversed',
+    message: 'If pagination reversed?',
+    type: 'confirm',
+    default: false,
+    when({paginationEnabled}) {
+      return paginationEnabled;
+    },
+  },
+
+  {
+    name: 'articleBodySelector',
+    message: 'An article body selector:',
+  },
+];
+
+/**
+ * Generates a filename for the new parsing file with ".json" extension
+ * @param {object} answers parameters
+ * @return {string} Generated filename
+ */
+function generateFileName(answers) {
+  return `${answers.host}-${answers.sectionName}.json`;
+}
+
+/**
+ * Generates a parsing file structure
+ * @param {object} answers parameters
+ * @return {string} Generated structure
+ */
+function generateBasicFileStructure(answers) {
+  const currentTimestamp = new Date().getTime();
+
+  const {
+    host,
+    pagePattern,
+    firstPagePattern,
+    linkSelector,
+    paginationEnabled,
+    paginationLastPageSelector,
+    paginationReversed,
+    articleBodySelector,
+  } = answers;
+
+  const structure = {
+    options: {
+      host,
+
+      section: {
+        firstPageUrl: firstPagePattern,
+        pattern: pagePattern,
+        selector: linkSelector,
+      },
+
+      pagination: {
+        lastPageSelector: paginationLastPageSelector,
+        reversed: paginationReversed,
+        enabled: paginationEnabled,
+      },
+
+      page: {
+        articleBodySelector,
+        ignoreSelectors: [],
+        ignoreTags: [],
+        preserveTags: [],
+        ignoreClasses: [],
+        preserveClasses: [],
+        ignoreAttributes: [],
+        preserveAttributes: [],
+      },
+
+      parsingStrategy: {
+        __not_done_yet__: true,
+      },
+    },
+
+    stats: {
+      pagesCount: 0,
+      fileGeneratedDate: currentTimestamp,
+      parsingDates: [],
+    },
+
+    pages: [],
+    parsingResults: {
+      tags: [],
+      classes: [],
+      attributes: [],
+    },
+    articles: [],
+  };
+
+  const isSchemaValid = validateSiteSectionSchema(structure);
+
+  if (!isSchemaValid) {
+    console.error('It it not possible to generate a valid file. Probably the schema is broken. Errors:', validateSiteSectionSchema.errors);
+    process.exit(1);
+  }
+
+  return JSON.stringify(structure, null, 2);
+}
+
+exports.handleGenerate = ({folder = '.'}) => {
+  inquirer.prompt(fileStructureQuestions)
+    .then(answers => {
+      const filename = generateFileName(answers);
+
+      const filepath = path.join(path.normalize(folder), filename);
+      console.log(filename);
+      const fileStructure = generateBasicFileStructure(answers);
+
+      fs.writeFileSync(filepath, fileStructure);
+
+      console.log(`[created] ${filepath}`);
+    })
+    .catch(e => {
+      console.log('An error occured:', e);
+    });
+};

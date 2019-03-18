@@ -1,0 +1,302 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/SiteSection",
+  "definitions": {
+    "SiteSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "options": {
+          "$ref": "#/definitions/Options"
+        },
+        "stats": {
+          "$ref": "#/definitions/Stats"
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PageElement"
+          }
+        },
+        "parsingResults": {
+          "$ref": "#/definitions/ParsingResults"
+        },
+        "articles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Article"
+          }
+        }
+      },
+      "required": [
+        "articles",
+        "options",
+        "pages",
+        "parsingResults",
+        "stats"
+      ],
+      "title": "SiteSection"
+    },
+    "Article": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "fromPage": {
+          "type": "integer"
+        },
+        "parsingDates": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "fromPage",
+        "parsingDates",
+        "url"
+      ],
+      "title": "Article"
+    },
+    "Options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "host": {
+          "type": "string"
+        },
+        "section": {
+          "$ref": "#/definitions/Section"
+        },
+        "pagination": {
+          "$ref": "#/definitions/Pagination"
+        },
+        "page": {
+          "$ref": "#/definitions/OptionsPage"
+        },
+        "parsingStrategy": {
+          "$ref": "#/definitions/ParsingStrategy"
+        }
+      },
+      "required": [
+        "host",
+        "page",
+        "pagination",
+        "parsingStrategy",
+        "section"
+      ],
+      "title": "Options"
+    },
+    "OptionsPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "articleBodySelector": {
+          "type": "string"
+        },
+        "ignoreSelectors": {
+          "type": "array",
+          "items": {}
+        },
+        "ignoreTags": {
+          "type": "array",
+          "items": {}
+        },
+        "preserveTags": {
+          "type": "array",
+          "items": {}
+        },
+        "ignoreClasses": {
+          "type": "array",
+          "items": {}
+        },
+        "preserveClasses": {
+          "type": "array",
+          "items": {}
+        },
+        "ignoreAttributes": {
+          "type": "array",
+          "items": {}
+        },
+        "preserveAttributes": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": [
+        "articleBodySelector",
+        "ignoreAttributes",
+        "ignoreClasses",
+        "ignoreSelectors",
+        "ignoreTags",
+        "preserveAttributes",
+        "preserveClasses",
+        "preserveTags"
+      ],
+      "title": "OptionsPage"
+    },
+    "Pagination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lastPageSelector": {
+          "type": "string"
+        },
+        "reversed": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled",
+        "lastPageSelector",
+        "reversed"
+      ],
+      "title": "Pagination"
+    },
+    "ParsingStrategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "__not_done_yet__": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "__not_done_yet__"
+      ],
+      "title": "ParsingStrategy"
+    },
+    "Section": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "firstPageUrl": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "selector": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "firstPageUrl",
+        "pattern",
+        "selector"
+      ],
+      "title": "Section"
+    },
+    "PageElement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "num": {
+          "type": "integer"
+        },
+        "articles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parsingDates": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "articles",
+        "num",
+        "parsingDates"
+      ],
+      "title": "PageElement"
+    },
+    "ParsingResults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Attribute"
+          }
+        },
+        "classes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Attribute"
+          }
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Attribute"
+          }
+        }
+      },
+      "required": [
+        "attributes",
+        "classes",
+        "tags"
+      ],
+      "title": "ParsingResults"
+    },
+    "Attribute": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer"
+        },
+        "articles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "articles",
+        "count",
+        "name"
+      ],
+      "title": "Attribute"
+    },
+    "Stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pagesCount": {
+          "type": "integer"
+        },
+        "fileGeneratedDate": {
+          "type": "integer"
+        },
+        "parsingDates": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "fileGeneratedDate",
+        "pagesCount",
+        "parsingDates"
+      ],
+      "title": "Stats"
+    }
+  }
+}

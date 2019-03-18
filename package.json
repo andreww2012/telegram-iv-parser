@@ -1,0 +1,30 @@
+{
+  "name": "telegram-iv-parser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andreww2012/telegram-iv-parser.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andreww2012/telegram-iv-parser/issues"
+  },
+  "homepage": "https://github.com/andreww2012/telegram-iv-parser#readme",
+  "dependencies": {
+    "ajv": "^6.10.0",
+    "inquirer": "^6.2.2",
+    "puppeteer": "^1.13.0",
+    "yargs": "^13.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^5.15.2",
+    "eslint-config-google": "^0.12.0"
+  }
+}

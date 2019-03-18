@@ -1,0 +1,78 @@
+{
+  "options": {
+    "host": "test.ru",
+
+    "section": {
+      "firstPageUrl": "news",
+      "pattern": "news/page/{0}.html",
+      "selector": ""
+    },
+
+    "pagination": {
+      "lastPageSelector": "",
+      "reversed": false,
+      "enabled": true
+    },
+
+    "page": {
+      "articleBodySelector": "",
+      "ignoreSelectors": [],
+      "ignoreTags": [],
+      "preserveTags": [],
+      "ignoreClasses": [],
+      "preserveClasses": [],
+      "ignoreAttributes": [],
+      "preserveAttributes": []
+    },
+
+    "parsingStrategy": {
+      "__not_done_yet__": true
+    }
+  },
+
+  "stats": {
+    "pagesCount": 0,
+    "fileGeneratedDate": 0,
+    "parsingDates": [1, 2, 3]
+  },
+
+  "pages": [
+    {
+      "num": 1,
+      "articles": ["article1", "article2"],
+      "parsingDates": [1, 2, 3]
+    }
+  ],
+
+  "parsingResults": {
+    "tags": [
+      {
+        "name": "iframe",
+        "count": 0,
+        "articles": ["article1", "article2"]
+      }
+    ],
+    "classes": [
+      {
+        "name": "test-class",
+        "count": 0,
+        "articles": ["article1", "article2"]
+      }
+    ],
+    "attributes": [
+      {
+        "name": "data-test",
+        "count": 0,
+        "articles": ["article1", "article2"]
+      }
+    ]
+  },
+
+  "articles": [
+    {
+      "url": "test1.html",
+      "fromPage": 1,
+      "parsingDates": [1, 2, 3]
+    }
+  ]
+}
