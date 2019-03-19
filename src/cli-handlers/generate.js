@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 const fs = require('fs');
 const path = require('path');
+const process = require('process');
 const inquirer = require('inquirer');
-const {validateSiteSectionSchema} = require('../validators');
+const {validateSiteSectionSchema} = require('../validator');
 
 const fileStructureQuestions = [
   {
@@ -85,6 +87,7 @@ function generateBasicFileStructure(answers) {
 
   const {
     host,
+    sectionName,
     pagePattern,
     firstPageUrl,
     linkSelector,
@@ -96,6 +99,7 @@ function generateBasicFileStructure(answers) {
   const structure = {
     options: {
       host,
+      name: sectionName,
 
       section: {
         pagePattern,
@@ -136,6 +140,7 @@ function generateBasicFileStructure(answers) {
       tags: [],
       classes: [],
       attributes: [],
+      unsupported: [],
     },
     articles: [],
   };
@@ -147,7 +152,7 @@ function generateBasicFileStructure(answers) {
     process.exit(1);
   }
 
-  return JSON.stringify(structure, null, 2);
+  return JSON.stringify(structure);
 }
 
 exports.handleGenerate = ({folder = '.'}) => {

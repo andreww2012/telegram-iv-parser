@@ -1,6 +1,7 @@
 {
   "options": {
     "host": "test.ru",
+    "name": "allnews",
 
     "section": {
       "pagePattern": "news/page/{0}.html",
@@ -33,7 +34,7 @@
   "stats": {
     "pagesCount": 0,
     "fileGeneratedDate": 0,
-    "parsingDates": [1552937372643, 1552937372642]
+    "parsingDates": []
   },
 
   "pages": [
@@ -59,14 +60,21 @@
     ],
     "classes": [
       {
-        "name": "test-class",
+        "name": "test-class/h1",
         "count": 0,
         "articles": ["articleHash1", "articleHash2"]
       }
     ],
     "attributes": [
       {
-        "name": "data-test",
+        "name": "href/a",
+        "count": 0,
+        "articles": ["articleHash1", "articleHash2"]
+      }
+    ],
+    "unsupported": [
+      {
+        "name": "aside/aside",
         "count": 0,
         "articles": ["articleHash1", "articleHash2"]
       }

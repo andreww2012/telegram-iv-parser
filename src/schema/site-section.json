@@ -76,6 +76,9 @@
         "host": {
           "type": "string"
         },
+        "name": {
+          "type": "string"
+        },
         "section": {
           "$ref": "#/definitions/Section"
         },
@@ -91,6 +94,7 @@
       },
       "required": [
         "host",
+        "name",
         "page",
         "pagination",
         "parsingStrategy",
@@ -266,12 +270,19 @@
           "items": {
             "$ref": "#/definitions/Attribute"
           }
+        },
+        "unsupported": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Attribute"
+          }
         }
       },
       "required": [
         "attributes",
         "classes",
-        "tags"
+        "tags",
+        "unsupported"
       ],
       "title": "ParsingResults"
     },
@@ -311,9 +322,7 @@
         },
         "parsingDates": {
           "type": "array",
-          "items": {
-            "type": "integer"
-          }
+          "items": {}
         }
       },
       "required": [

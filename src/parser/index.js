@@ -1,5 +1,8 @@
-const {startParsing} = require('./scheduler');
+const {Parser} = require('./Parser');
+const {Fetcher, generateFetcherJob} = require('./Fetcher');
 
 module.exports = {
-  startParsing,
+  Parser,
+  Fetcher,
+  generateFetcherJob,
 };
