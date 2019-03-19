@@ -37,7 +37,6 @@ exports.handleInterpret = ({filename, reportFolder = defaultReportsFolder}) => {
       const {articles} = result;
       const firstArticles = [articles[0], articles[1], articles[2], articles[3]].filter(a => a);
       delete result.articles;
-      console.log(firstArticles);
       firstArticles.forEach((articleId, i) => {
         const articleRelativeUrl = fileContents.articles
           .find(a => a.hash === articleId)
@@ -45,11 +44,7 @@ exports.handleInterpret = ({filename, reportFolder = defaultReportsFolder}) => {
         const fullArticleUrl = normalizeUrl(`${host}/${articleRelativeUrl}`);
         result[`article${i}`] = fullArticleUrl;
       });
-
-      console.log(result);
     });
-
-    // console.log(currParsingResults);
 
     const csv = json2csv(currParsingResults);
 
