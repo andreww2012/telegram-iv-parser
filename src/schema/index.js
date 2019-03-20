@@ -1,5 +1,9 @@
-const siteSectionSchema = require('./site-section.json');
+const example = require('./example');
+const schema = require('./schema');
+const {validateSchema} = require('./validate');
 
 module.exports = {
-  siteSectionSchema,
+  example,
+  schema,
+  validateSchema,
 };

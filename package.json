@@ -29,6 +29,7 @@
     "is-absolute-url": "^2.1.0",
     "jsonfile": "^5.0.0",
     "lodash": "^4.17.11",
+    "loglevel": "^1.6.1",
     "nanoid": "^2.0.1",
     "normalize-url": "^4.2.0",
     "pretty-error": "^2.1.1",

@@ -1,7 +1,10 @@
+const process = require('process');
 require('pretty-error').start();
-const yargs = require('yargs');
-require('./src/commands');
+const log = require('loglevel');
+require('./src/cli');
 
-yargs.demandCommand(1, 'Please specify the command')
-  .help()
-  .argv;
+process.on('unhandledRejection', err => {
+  log.error('Unhandled rejection occured:');
+  log.trace(err);
+  process.exit(1);
+});

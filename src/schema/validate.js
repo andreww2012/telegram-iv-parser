@@ -6,6 +6,4 @@ ajv.addMetaSchema(draft06MetaSchema);
 
 const {siteSectionSchema} = require('./schema');
 
-module.exports = {
-  validateSiteSectionSchema: ajv.compile(siteSectionSchema),
-};
+exports.validateSchema = ajv.compile(siteSectionSchema);

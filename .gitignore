@@ -1,6 +1,5 @@
 .temp/
-.sites/
-.reports/
+.ivparser/
 
 # Node gitignore
 
