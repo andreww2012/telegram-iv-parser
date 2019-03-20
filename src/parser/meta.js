@@ -5,10 +5,10 @@ const unsupportedCombinationsDescription = [
   ],
   [
     ['blockquote', 'aside'],
-    ['img', 'video', 'iframe', 'audio'],
+    ['img', 'video', 'audio', 'iframe'],
   ],
   [
-    ['blockquote', 'aside', 'img', 'iframe', 'video', 'audio', 'footer'],
+    ['blockquote', 'aside', 'img', 'source', 'picture', 'iframe', 'video', 'audio', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
   ],
 ];
 

@@ -1,6 +1,6 @@
 const path = require('path');
 const jsonfile = require('jsonfile');
-const {createDir} = require('./createDir');
+const {createDir} = require('./create-dir');
 
 /**
  * Creates JSON file

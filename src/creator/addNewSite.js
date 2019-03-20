@@ -103,7 +103,7 @@ function addNewSite(answers) {
   if (!isSchemaValid) {
     log.error(`It it not possible to generate a valid file.
       Probably the schema is broken.`);
-    log.trace(validateSchema.errors);
+    log(validateSchema.errors);
     process.exit(1);
   }
 

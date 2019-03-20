@@ -1,8 +1,6 @@
-const inquirer = require('inquirer');
-const log = require('loglevel');
-const {addNewSite} = require('../creator/addNewSite');
 
-const fileStructureQuestions = [
+
+module.exports = [
   {
     name: 'host',
     message: 'Host name (test.ru, subdomain.example.com):',
@@ -69,11 +67,3 @@ const fileStructureQuestions = [
     message: 'Selector(s) that must be ignored (comma separated):',
   },
 ];
-
-module.exports = async () => {
-  const answers = await inquirer.prompt(fileStructureQuestions);
-
-  addNewSite(answers);
-
-  log.info(`New site added: ${answers.host}`);
-};

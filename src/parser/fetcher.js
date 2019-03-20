@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const {URL} = require('url');
 const normalizeUrl = require('normalize-url');
 const axios = require('axios');

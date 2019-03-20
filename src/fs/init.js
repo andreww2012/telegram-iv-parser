@@ -1,5 +1,5 @@
 const config = require('../config');
-const {createDir} = require('./createDir');
+const {createDir} = require('./create-dir');
 
 /**
  * Creates IV parser file structure

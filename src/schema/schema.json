@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$ref": "#/definitions/SiteSection",
+  "$ref": "#/definitions/Site",
   "definitions": {
-    "SiteSection": {
+    "Site": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -19,12 +19,15 @@
           }
         },
         "parsingResults": {
-          "$ref": "#/definitions/ParsingResults"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ParsingResult"
+          }
         },
         "articles": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/SiteSectionArticle"
+            "$ref": "#/definitions/Article"
           }
         }
       },
@@ -35,9 +38,9 @@
         "parsingResults",
         "stats"
       ],
-      "title": "SiteSection"
+      "title": "Site"
     },
-    "SiteSectionArticle": {
+    "Article": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -53,21 +56,26 @@
         "code": {
           "type": "integer"
         },
-        "parsingDates": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
+        "parsed": {
+          "type": "boolean"
+        },
+        "checked": {
+          "type": "boolean"
+        },
+        "d": {
+          "type": "integer"
         }
       },
       "required": [
+        "checked",
         "code",
+        "d",
         "fromPage",
         "hash",
-        "parsingDates",
+        "parsed",
         "url"
       ],
-      "title": "SiteSectionArticle"
+      "title": "Article"
     },
     "Options": {
       "type": "object",
@@ -87,9 +95,6 @@
         },
         "page": {
           "$ref": "#/definitions/OptionsPage"
-        },
-        "parsingStrategy": {
-          "$ref": "#/definitions/ParsingStrategy"
         }
       },
       "required": [
@@ -97,7 +102,6 @@
         "name",
         "page",
         "pagination",
-        "parsingStrategy",
         "section"
       ],
       "title": "Options"
@@ -112,41 +116,11 @@
         "ignoreSelectors": {
           "type": "array",
           "items": {}
-        },
-        "ignoreTags": {
-          "type": "array",
-          "items": {}
-        },
-        "preserveTags": {
-          "type": "array",
-          "items": {}
-        },
-        "ignoreClasses": {
-          "type": "array",
-          "items": {}
-        },
-        "preserveClasses": {
-          "type": "array",
-          "items": {}
-        },
-        "ignoreAttributes": {
-          "type": "array",
-          "items": {}
-        },
-        "preserveAttributes": {
-          "type": "array",
-          "items": {}
         }
       },
       "required": [
         "articleBodySelector",
-        "ignoreAttributes",
-        "ignoreClasses",
-        "ignoreSelectors",
-        "ignoreTags",
-        "preserveAttributes",
-        "preserveClasses",
-        "preserveTags"
+        "ignoreSelectors"
       ],
       "title": "OptionsPage"
     },
@@ -170,19 +144,6 @@
         "totalNumberOfPagesSelector"
       ],
       "title": "Pagination"
-    },
-    "ParsingStrategy": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "__not_done_yet__": {
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "__not_done_yet__"
-      ],
-      "title": "ParsingStrategy"
     },
     "Section": {
       "type": "object",
@@ -212,91 +173,40 @@
         "num": {
           "type": "integer"
         },
-        "articles": {
+        "art": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PageArticle"
+            "type": "string"
           }
         },
-        "parsingDates": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
+        "d": {
+          "type": "integer"
         }
       },
       "required": [
-        "articles",
-        "num",
-        "parsingDates"
+        "art",
+        "d",
+        "num"
       ],
       "title": "PageElement"
     },
-    "PageArticle": {
+    "ParsingResult": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "hash": {
+        "cat": {
           "type": "string"
         },
-        "parsed": {
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "hash",
-        "parsed"
-      ],
-      "title": "PageArticle"
-    },
-    "ParsingResults": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "tags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Attribute"
-          }
+        "info": {
+          "$ref": "#/definitions/Info"
         },
-        "classes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Attribute"
-          }
-        },
-        "attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Attribute"
-          }
-        },
-        "unsupported": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Attribute"
-          }
-        }
-      },
-      "required": [
-        "attributes",
-        "classes",
-        "tags",
-        "unsupported"
-      ],
-      "title": "ParsingResults"
-    },
-    "Attribute": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
         "name": {
           "type": "string"
         },
         "count": {
           "type": "integer"
         },
-        "articles": {
+        "art": {
           "type": "array",
           "items": {
             "type": "string"
@@ -304,11 +214,18 @@
         }
       },
       "required": [
-        "articles",
+        "art",
+        "cat",
         "count",
+        "info",
         "name"
       ],
-      "title": "Attribute"
+      "title": "ParsingResult"
+    },
+    "Info": {
+      "type": "object",
+      "additionalProperties": true,
+      "title": "Info"
     },
     "Stats": {
       "type": "object",
@@ -320,15 +237,14 @@
         "fileGeneratedDate": {
           "type": "integer"
         },
-        "parsingDates": {
-          "type": "array",
-          "items": {}
+        "d": {
+          "type": "integer"
         }
       },
       "required": [
+        "d",
         "fileGeneratedDate",
-        "pagesCount",
-        "parsingDates"
+        "pagesCount"
       ],
       "title": "Stats"
     }

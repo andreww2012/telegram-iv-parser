@@ -17,69 +17,33 @@
 
     "page": {
       "articleBodySelector": "",
-      "ignoreSelectors": [],
-      "ignoreTags": [],
-      "preserveTags": [],
-      "ignoreClasses": [],
-      "preserveClasses": [],
-      "ignoreAttributes": [],
-      "preserveAttributes": []
-    },
-
-    "parsingStrategy": {
-      "__not_done_yet__": true
+      "ignoreSelectors": []
     }
   },
 
   "stats": {
     "pagesCount": 0,
     "fileGeneratedDate": 0,
-    "parsingDates": []
+    "d": 1552937372643
   },
 
   "pages": [
     {
       "num": 1,
-      "articles": [
-        {
-          "hash": "articleHash1",
-          "parsed": true
-        }
-      ],
-      "parsingDates": [1552937372643, 1552937372642]
+      "art": ["articleHash1", "articleHash2"],
+      "d": 1552937372643
     }
   ],
 
-  "parsingResults": {
-    "tags": [
-      {
-        "name": "iframe",
-        "count": 0,
-        "articles": ["articleHash1", "articleHash2"]
-      }
-    ],
-    "classes": [
-      {
-        "name": "test-class/h1",
-        "count": 0,
-        "articles": ["articleHash1", "articleHash2"]
-      }
-    ],
-    "attributes": [
-      {
-        "name": "href/a",
-        "count": 0,
-        "articles": ["articleHash1", "articleHash2"]
-      }
-    ],
-    "unsupported": [
-      {
-        "name": "aside/aside",
-        "count": 0,
-        "articles": ["articleHash1", "articleHash2"]
-      }
-    ]
-  },
+  "parsingResults": [
+    {
+      "cat": "tags/classes/attributes/unsupported/whatever",
+      "info": {},
+      "name": "iframe",
+      "count": 0,
+      "art": ["articleHash1", "articleHash2"]
+    }
+  ],
 
   "articles": [
     {
@@ -87,7 +51,9 @@
       "url": "/news/test/123456789.html",
       "fromPage": 15,
       "code": 200,
-      "parsingDates": [1552937372643, 1552937372642]
+      "parsed": true,
+      "checked": false,
+      "d": 1552937372643
     }
   ]
 }

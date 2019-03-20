@@ -1,10 +1,9 @@
-/* eslint-disable no-console */
 const fs = require('fs');
 const jsonfile = require('jsonfile');
 const chalk = require('chalk');
 const nanoid = require('nanoid');
 const {Fetcher, generateFetcherJob} = require('./Fetcher');
-const {validateSiteSectionSchema} = require('../validator');
+const {validateSchema} = require('../schema');
 
 /**
  * Parser
@@ -19,7 +18,7 @@ class Parser {
     this.period = +period || 500;
     this.fileDescriptor = fs.openSync(filePath, 'rs+');
     this.fileContents = jsonfile.readFileSync(this.fileDescriptor);
-    if (!validateSiteSectionSchema(this.fileContents)) {
+    if (!validateSchema(this.fileContents)) {
       throw new Error(
         chalk.red('[error]'),
         'File structure does not match the schema',
@@ -175,10 +174,10 @@ class Parser {
       pr.unsupported.sort((el1, el2) => el1.count - el2.count);
     }
 
-    if (!validateSiteSectionSchema(this.fileContents)) {
+    if (!validateSchema(this.fileContents)) {
       console.error(
         chalk.red('[schema break delected after a parsing iteration]'),
-        validateSiteSectionSchema.errors,
+        validateSchema.errors,
       );
       throw new Error('Schema would be broken if parsing result is saved');
     }
