@@ -3,8 +3,9 @@ const {URL} = require('url');
 const normalizeUrl = require('normalize-url');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const lodash = require('lodash');
 const isAbsoluteUrl = require('is-absolute-url');
-const {unsupportedPairs} = require('./unsupp-combinations');
+const {unsupportedPairs, tagsToIgnore} = require('./meta');
 
 /**
  * Just fetcher
@@ -73,6 +74,15 @@ class Fetcher {
     const {firstPageUrl} = options.section;
     const {totalNumberOfPagesSelector} = options.pagination;
 
+    // Not possible to get
+    if (!totalNumberOfPagesSelector) {
+      this.fetchResult = {};
+      this.payload = {
+        count: Number.MAX_SAFE_INTEGER,
+      };
+      return;
+    }
+
     const urlNorm = normalizeUrl(`${host}/${firstPageUrl}`);
 
     await this.fetchPage(urlNorm);
@@ -130,6 +140,11 @@ class Fetcher {
         parsedUrls.push(normHostlessUrl);
       });
       this.payload = {parsedUrls};
+
+      if (!parsedUrls.length
+          && !fileContents.pagination.totalNumberOfPagesSelector) {
+        this.payload.pageWithoutLinks = true;
+      }
     } else {
       this.payload = null;
     }
@@ -153,10 +168,16 @@ class Fetcher {
     const {httpSuccess, response} = this.fetchResult;
 
     if (httpSuccess) {
-      const {articleBodySelector} = fileContents.options.page;
+      const {articleBodySelector, ignoreSelectors} = fileContents.options.page;
       const $ = cheerio.load(response);
 
-      const bodyElementsColleciton = $('*', articleBodySelector);
+      let bodyElementsColleciton = $('*', articleBodySelector);
+
+      ignoreSelectors.forEach(selectorThatMustBeIgnored => {
+        bodyElementsColleciton = bodyElementsColleciton
+          .not(selectorThatMustBeIgnored);
+      });
+
       const bodyTags = [].slice.call(bodyElementsColleciton)
         .filter(e => e.type === 'tag');
 
@@ -188,8 +209,10 @@ class Fetcher {
         });
       });
 
+      const tagsNormalized = lodash.pull([...tags], ...tagsToIgnore);
+
       this.payload = {
-        tags: [...tags],
+        tags: tagsNormalized,
         attrs: [...attrs],
         classes: [...classes],
         unsupported: [...unsupported],

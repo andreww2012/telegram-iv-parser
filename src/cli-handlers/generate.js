@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const process = require('process');
 const inquirer = require('inquirer');
+const cssWhat = require('css-what');
+const shell = require('shelljs');
 const {validateSiteSectionSchema} = require('../validator');
 
 const fileStructureQuestions = [
@@ -24,7 +26,7 @@ const fileStructureQuestions = [
 
   {
     name: 'paginationLastPageSelector',
-    message: 'Selector containing page count:',
+    message: 'Selector containing page count (optional):',
   },
 
   {
@@ -66,16 +68,12 @@ const fileStructureQuestions = [
       return !!input;
     },
   },
-];
 
-/**
- * Generates a filename for the new parsing file with ".json" extension
- * @param {object} answers parameters
- * @return {string} Generated filename
- */
-function generateFileName(answers) {
-  return `${answers.host}-${answers.sectionName}.json`;
-}
+  {
+    name: 'selectorsThatMustBeIgnored',
+    message: 'Selector(s) that must be ignored (comma separated):',
+  },
+];
 
 /**
  * Generates a parsing file structure
@@ -94,7 +92,20 @@ function generateBasicFileStructure(answers) {
     paginationLastPageSelector,
     paginationReversed,
     articleBodySelector,
+    selectorsThatMustBeIgnored,
   } = answers;
+
+  const ignoreSelectors = selectorsThatMustBeIgnored
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => {
+      try {
+        // Throws an exception when a selector is invalid
+        return cssWhat(s);
+      } catch (error) {
+        return false;
+      }
+    });
 
   const structure = {
     options: {
@@ -115,7 +126,7 @@ function generateBasicFileStructure(answers) {
 
       page: {
         articleBodySelector,
-        ignoreSelectors: [],
+        ignoreSelectors,
         ignoreTags: [],
         preserveTags: [],
         ignoreClasses: [],
@@ -155,12 +166,15 @@ function generateBasicFileStructure(answers) {
   return JSON.stringify(structure);
 }
 
-exports.handleGenerate = ({folder = '.'}) => {
+exports.handleGenerate = ({folder = '.sites'}) => {
   inquirer.prompt(fileStructureQuestions)
     .then(answers => {
-      const filename = generateFileName(answers);
+      const {host, sectionName} = answers;
 
-      const filepath = path.join(path.normalize(folder), filename);
+      shell.mkdir('-p', folder);
+
+      const filename = `${host}-${sectionName}.json`;
+      const filepath = path.join(folder, filename);
       const fileStructure = generateBasicFileStructure(answers);
 
       fs.writeFileSync(filepath, fileStructure);

@@ -1,9 +1,9 @@
 const {handleGenerate} = require('./generate');
 const {handleParse} = require('./parse');
-const {handleInterpret} = require('./interpret');
+const {handle: handleReport} = require('./report');
 
 module.exports = {
-  generate: handleGenerate,
-  parse: handleParse,
-  interpret: handleInterpret,
+  handleGenerate,
+  handleParse,
+  handleReport,
 };

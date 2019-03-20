@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{host}} - {{sectionName}} - {{day}} {{time}} Report</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <section class="section">
+      <h1 class="title">
+        <a href="https://{{host}}" target="_blank">{{host}}</a>
+        /
+        <span class="has-text-primary">{{sectionName}}</span> report
+      </h1>
+      <div class="notification is-info">
+        Formed <samp>{{day}} {{time}}</pre > </div>
+
+      <h2 class="title">Classes</h2>
+      <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+        <thead>
+          <th width="40%">Name</th>
+          <th>Count</th>
+          <th width="50%">Link</th>
+        </thead>
+        <tbody>
+          {{#each data.classes}}
+            <tr>
+              <td><samp>.{{name}}</samp></td>
+              <td><span class="tag is-medium is-rounded">{{count}}</span></td>
+              <td><a href="{{article}}" target="_blank">{{article}}</a></td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <h2 class="title">Unsupported combinations</h2>
+      <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+        <thead>
+          <th width="40%">Name</th>
+          <th>Count</th>
+          <th width="50%">Link</th>
+        </thead>
+        <tbody>
+          {{#each data.unsupported}}
+            <tr>
+              <td><span class="tag is-danger is-medium has-font-weight-bold"><samp>{{name}}</samp></span></td>
+              <td><span class="tag is-medium is-rounded">{{count}}</span></td>
+              <td><a href="{{article}}" target="_blank">{{article}}</a></td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <h2 class="title">Tags</h2>
+      <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+        <thead>
+          <th width="40%">Name</th>
+          <th>Count</th>
+          <th width="50%">Link</th>
+        </thead>
+        <tbody>
+          {{#each data.tags}}
+            <tr>
+              <td><samp>&lt;{{name}}&gt;</samp></td>
+              <td><span class="tag is-medium is-rounded">{{count}}</span></td>
+              <td><a href="{{article}}" target="_blank">{{article}}</a></td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <h2 class="title">Attributes</h2>
+      <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+        <thead>
+          <th width="40%">Name</th>
+          <th>Count</th>
+          <th width="50%">Link</th>
+        </thead>
+        <tbody>
+          {{#each data.attributes}}
+            <tr>
+              <td><samp>@{{name}}</samp></td>
+              <td><span class="tag is-medium is-rounded">{{count}}</span></td>
+              <td><a href="{{article}}" target="_blank">{{article}}</a></td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </section>
+  </div>
+</body>
+</html>

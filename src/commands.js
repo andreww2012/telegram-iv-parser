@@ -6,17 +6,24 @@ exports.commands = yargs
     command: 'generate [folder]',
     aliases: ['gen'],
     desc: `Generates a new parsing file with a skeleton structure`,
-    handler: cliHandlers.generate,
+    handler: cliHandlers.handleGenerate,
   })
   .command({
-    command: 'parse <filename>',
-    aliases: ['start'],
+    command: 'launch <filename>',
+    aliases: ['start', 'parse'],
     desc: 'Starts parsing process',
-    handler: cliHandlers.parse,
+    builder: {
+      period: {
+        alias: 'p',
+        default: 500,
+        describe: 'Period per requests',
+      },
+    },
+    handler: cliHandlers.handleParse,
   })
   .command({
-    command: 'interpret <filename> [report-folder]',
+    command: 'report <filename> [report-folder]',
     aliases: ['stats', 'csv', 'info'],
     desc: 'Generates CSV report',
-    handler: cliHandlers.interpret,
+    handler: cliHandlers.handleReport,
   });

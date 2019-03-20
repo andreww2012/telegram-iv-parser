@@ -13,8 +13,10 @@ class Parser {
   /**
    * Synchronously opens a file and synchronously reads it
    * @param {string} filePath file name
+   * @param {number} period fetch frequency in ms
    */
-  constructor(filePath) {
+  constructor(filePath, period) {
+    this.period = +period || 500;
     this.fileDescriptor = fs.openSync(filePath, 'rs+');
     this.fileContents = jsonfile.readFileSync(this.fileDescriptor);
     if (!validateSiteSectionSchema(this.fileContents)) {
@@ -58,25 +60,29 @@ class Parser {
 
     if (fetcherJob.type === Fetcher.fetchTypesEnum.fetchPageLinks) {
       const {pageNum} = jobData;
-      const {parsedUrls} = payload;
-      const articles = parsedUrls.map(() => ({
-        hash: nanoid(12),
-        parsed: false,
-      }));
-      const articlesFullInfo = articles.map(({hash}, i) => ({
-        hash,
-        url: parsedUrls[i],
-        fromPage: pageNum,
-        code: fetcherInstance.fetchResult.status,
-        parsingDates: [],
-      }));
+      const {parsedUrls, pageWithoutLinks} = payload;
+      if (pageWithoutLinks) {
+        fileContents.stats.pagesCount = pageNum - 1;
+      } else {
+        const articles = parsedUrls.map(() => ({
+          hash: nanoid(12),
+          parsed: false,
+        }));
+        const articlesFullInfo = articles.map(({hash}, i) => ({
+          hash,
+          url: parsedUrls[i],
+          fromPage: pageNum,
+          code: fetcherInstance.fetchResult.status,
+          parsingDates: [],
+        }));
 
-      fileContents.pages.push({
-        num: pageNum,
-        articles,
-        parsingDates: [new Date().getTime()],
-      });
-      fileContents.articles.push(...articlesFullInfo);
+        fileContents.pages.push({
+          num: pageNum,
+          articles,
+          parsingDates: [new Date().getTime()],
+        });
+        fileContents.articles.push(...articlesFullInfo);
+      }
     }
 
     if (fetcherJob.type === Fetcher.fetchTypesEnum.fetchArticle) {
@@ -185,8 +191,6 @@ class Parser {
    * Performs a parsing loop iteration
    */
   async parse() {
-    console.log(chalk.blue('Starting parsing loop iteration'));
-
     const fetcherJob = generateFetcherJob(this.fileContents);
     const fetcherJobStringified = JSON.stringify(fetcherJob);
 
@@ -205,7 +209,7 @@ class Parser {
       if (fetcher.payload) {
         await this.processFetchResult(fetcherJob, fetcher);
         console.log(chalk.greenBright('[job done]'), fetcherJobStringified);
-        setTimeout(this.parse.bind(this), 1000);
+        setTimeout(this.parse.bind(this), this.period);
       } else {
         console.log(chalk.red('[job failed]'), fetcherJobStringified);
       }
@@ -221,7 +225,7 @@ class Parser {
    */
   startParsingLoop() {
     try {
-      console.log(chalk.blue('Parsing is starting'));
+      console.log(chalk.blue(`Parsing is starting, period=${this.period}`));
       this.parse();
     } catch (error) {
       console.log(chalk.red('An error occured during the parsing:'), error);
