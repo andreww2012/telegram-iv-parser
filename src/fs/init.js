@@ -6,8 +6,8 @@ const {createDir} = require('./create-dir');
  */
 function initStructure() {
   const directoriesToCreate = [
-    config.dir.defaultDirectoryName,
-    ...config.dir.subDirectories,
+    config.dirs.defaultDirName,
+    ...Object.values(config.dirs),
   ];
 
   createDir(directoriesToCreate);

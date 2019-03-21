@@ -1,8 +1,8 @@
-const path = require('path');
 const {Parser} = require('../parser');
+const config = require('../config');
 
 module.exports = {
-  command: 'launch <sitename> <section>',
+  command: 'launch <sitename> <section> [period]',
   aliases: ['start', 'parse'],
   describe: 'Starts parsing process',
   builder: {
@@ -13,13 +13,10 @@ module.exports = {
     },
   },
 
-  handler({filename, period}) {
-    let filePath = path.normalize(filename);
-
-    if (!filename.endsWith('.json')) {
-      filePath = `${filePath}.json`;
-    }
-
-    new Parser(filePath, period).startParsingLoop();
+  handler({sitename, section, period}) {
+    new Parser(
+      `${config.dirs.sitesDir}/${sitename}/${section}.json`,
+      period,
+    ).startParsingLoop();
   },
 };

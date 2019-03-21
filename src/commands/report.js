@@ -29,14 +29,13 @@ module.exports = {
   handler({site, infinite, per}) {
     const [host = null, ...sections] = site.split('@');
 
+    makeReport(host, ...sections);
     if (infinite) {
       const perMs = per * 60 * 1000;
-      setTimeout(
-        makeReport.bind(null, host, ...sections),
+      setInterval(
+        makeReport.bind(this, host, ...sections),
         perMs,
       );
-    } else {
-      makeReport(host, ...sections);
     }
   },
 };

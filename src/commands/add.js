@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
-const log = require('loglevel');
-const {addNewSite} = require('../creator/addNewSite');
+const {addNewSite} = require('../creator');
 const {addSiteQuestions} = require('../questions');
 
 module.exports = {
@@ -13,6 +12,6 @@ module.exports = {
 
     addNewSite(answers);
 
-    log.info(`New site added: ${answers.host}`);
+    console.log(`New site added: ${answers.host}`);
   },
 };

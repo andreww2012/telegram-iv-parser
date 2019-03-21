@@ -24,13 +24,14 @@ class ReportGenerator {
    */
   generate() {
     const reportTemplate = handlebars.compile(fs.readFileSync(
+      // eslint-disable-next-line no-undef
       path.join(__dirname, this.reportTemplatePath),
       {encoding: 'utf8'},
     ));
 
     const {fileContents} = this;
     const {host, name} = fileContents.options;
-    const {parsingResults} = fileContents;
+    let {parsingResults} = fileContents;
 
     const currDate = new Date();
 
@@ -41,33 +42,36 @@ class ReportGenerator {
     let reportTemplateContext = {
       host,
       sectionName: name,
-      day: dayFormatted,
-      time: timeFormatted,
+      date: {
+        rawDate: currDate.toISOString(),
+        dayFormatted,
+        timeFormatted,
+      },
       data: {},
     };
 
-    Object.keys(parsingResults).forEach(key => {
-      let currParsingResults = parsingResults[key];
+    parsingResults.forEach(r => r.article = r.art[0]);
 
-      currParsingResults.forEach(result => {
-        result.article = result.articles[0];
-        delete result.articles;
-        let fullArticleUrl = '-';
-        if (result.article) {
-          const articleRelativeUrl = fileContents.articles
-            .find(a => a.hash === result.article)
-            .url;
-          fullArticleUrl = normalizeUrl(`${host}/${articleRelativeUrl}`);
-        }
-        result.article = fullArticleUrl;
-      });
+    parsingResults = lodash.uniqBy(parsingResults, 'article');
 
-      currParsingResults = lodash.uniqBy(
-        currParsingResults,
-        'article',
-      );
+    parsingResults.forEach(result => {
+      delete result.art;
+      let fullArticleUrl = '-';
+      if (result.article) {
+        const articleRelativeUrl = fileContents.articles
+          .find(a => a.hash === result.article)
+          .url;
+        fullArticleUrl = normalizeUrl(`${host}/${articleRelativeUrl}`);
+      }
+      result.article = fullArticleUrl;
 
-      reportTemplateContext.data[key] = currParsingResults;
+      const {cat: category} = result;
+
+      if (!reportTemplateContext.data[category]) {
+        reportTemplateContext.data[category] = [result];
+      } else {
+        reportTemplateContext.data[category].push(result);
+      }
     });
 
     return {

@@ -29,7 +29,6 @@
     "is-absolute-url": "^2.1.0",
     "jsonfile": "^5.0.0",
     "lodash": "^4.17.11",
-    "loglevel": "^1.6.1",
     "nanoid": "^2.0.1",
     "normalize-url": "^4.2.0",
     "pretty-error": "^2.1.1",
@@ -37,7 +36,7 @@
     "yargs": "^13.2.2"
   },
   "devDependencies": {
-    "eslint": "^5.15.2",
+    "eslint": "^5.15.3",
     "eslint-config-google": "^0.12.0"
   }
 }

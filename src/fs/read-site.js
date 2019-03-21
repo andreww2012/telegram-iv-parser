@@ -10,7 +10,7 @@ const config = require('../config');
  * @return {any} file contents
  */
 function readSite(host, section) {
-  const fullPath = path.resolve(`${config.dirs.sitesDir}/${host}/${host}-${section}.json`);
+  const fullPath = path.resolve(`${config.dirs.sitesDir}/${host}/${section}.json`);
 
   const fileContents = jsonfile.readFileSync(fullPath);
 

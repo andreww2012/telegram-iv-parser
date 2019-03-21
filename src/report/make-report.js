@@ -1,7 +1,7 @@
 const fs = require('fs');
 const config = require('../config');
-const {readSite, writeFile} = require('../fs');
-const {ReportGenerator} = require('../report');
+const {readSite, addFile} = require('../fs');
+const {ReportGenerator} = require('../report/ReportGenerator');
 
 /**
  * Generates report(s)
@@ -9,6 +9,7 @@ const {ReportGenerator} = require('../report');
  * @param {...string} sections site sections
  */
 function makeReport(host = null, ...sections) {
+  console.log(`${new Date().toUTCString()} Forming report for host ${host || '[ALL]'}, section ${sections.length ? sections : '[ALL]'}`);
   const {sitesDir, reportsDir} = config.dirs;
   let hosts = [];
   let singleHost = false;
@@ -34,18 +35,20 @@ function makeReport(host = null, ...sections) {
     )];
 
     for (let j = 0; j < siteSections.length; j++) {
-      const siteSectionName = siteSections[j];
+      const siteSectionName = siteSections[j].replace(/\.json$/i, '');
 
       const fileContents = readSite(hostName, siteSectionName);
 
       const reportGenerator = new ReportGenerator(fileContents);
 
-      const {html} = reportGenerator.generate();
+      const {context, html} = reportGenerator.generate();
+      const {date} = context;
 
-      writeFile(
-        `${reportsDir}/${hostName}`,
-        `report-${hostName}-${siteSectionName}`,
+      addFile(
+        `${reportsDir}/${hostName}/${date.dayFormatted}`,
+        `report-${hostName}-${siteSectionName}.html`,
         html,
+        true,
       );
     }
   }

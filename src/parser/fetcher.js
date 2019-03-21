@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const {URL} = require('url');
 const normalizeUrl = require('normalize-url');
 const axios = require('axios');
@@ -51,7 +52,7 @@ class Fetcher {
 
       this.fetchResult = {
         requestSuccess: true,
-        httpSuccess: (status >= 200 && status < 300),
+        httpSuccess: (status >= 200 && status < 300 || status === 404),
         status,
         response: data,
       };
@@ -141,7 +142,7 @@ class Fetcher {
       this.payload = {parsedUrls};
 
       if (!parsedUrls.length
-          && !fileContents.pagination.totalNumberOfPagesSelector) {
+          && !fileContents.options.pagination.totalNumberOfPagesSelector) {
         this.payload.pageWithoutLinks = true;
       }
     } else {
@@ -264,7 +265,7 @@ class Fetcher {
  * @return {object|null}
  */
 function generateFetcherJob(fileContents) {
-  if (fileContents.stats.parsingDates.length === 0) {
+  if (!fileContents.stats.d) {
     return {
       type: Fetcher.fetchTypesEnum.fetchPageCount,
       data: null,
@@ -276,9 +277,8 @@ function generateFetcherJob(fileContents) {
   let articlesToFetch = [];
 
   for (let i = 0; i < pagesFetchedLength; i++) {
-    articlesToFetch = pagesFetched[i].articles
-      .filter(art => !art.parsed)
-      .map(art => art.hash);
+    articlesToFetch = pagesFetched[i].art
+      .filter(hsh => !(fileContents.articles.find(a => a.hash === hsh).parsed));
     if (articlesToFetch.length) {
       break;
     }
@@ -307,7 +307,6 @@ function generateFetcherJob(fileContents) {
 
   return null;
 }
-
 
 module.exports = {
   generateFetcherJob,

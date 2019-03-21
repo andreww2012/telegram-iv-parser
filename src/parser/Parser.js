@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const fs = require('fs');
 const jsonfile = require('jsonfile');
 const chalk = require('chalk');
@@ -54,7 +55,7 @@ class Parser {
 
     if (fetcherJob.type === Fetcher.fetchTypesEnum.fetchPageCount) {
       fileContents.stats.pagesCount = fetcherInstance.payload.count;
-      fileContents.stats.parsingDates.unshift(new Date().getTime());
+      fileContents.stats.d = new Date().getTime();
     }
 
     if (fetcherJob.type === Fetcher.fetchTypesEnum.fetchPageLinks) {
@@ -63,22 +64,22 @@ class Parser {
       if (pageWithoutLinks) {
         fileContents.stats.pagesCount = pageNum - 1;
       } else {
-        const articles = parsedUrls.map(() => ({
+        const articlesFullInfo = parsedUrls.map(url => ({
           hash: nanoid(12),
-          parsed: false,
-        }));
-        const articlesFullInfo = articles.map(({hash}, i) => ({
-          hash,
-          url: parsedUrls[i],
+          url,
           fromPage: pageNum,
           code: fetcherInstance.fetchResult.status,
-          parsingDates: [],
+          d: 0,
+          parsed: false,
+          checked: false,
         }));
+
+        const articleHashes = articlesFullInfo.map(({hash}) => hash);
 
         fileContents.pages.push({
           num: pageNum,
-          articles,
-          parsingDates: [new Date().getTime()],
+          art: articleHashes,
+          d: new Date().getTime(),
         });
         fileContents.articles.push(...articlesFullInfo);
       }
@@ -89,89 +90,90 @@ class Parser {
       const {tags, attrs, classes, unsupported} = payload;
 
       const articleInfo = fileContents.articles.find(a => a.hash === articleId);
-      const {fromPage} = articleInfo;
-      const pageInfo = this.fileContents.pages.find(p => +p.num === +fromPage);
-      const articlePageInfo = pageInfo.articles.find(a => a.hash === articleId);
 
-      const currTimestamp = new Date().getTime();
-
-      // 1. Add article fetch timestamp
-      articleInfo.parsingDates.unshift(currTimestamp);
-
-      // 2. Same for the whole page
-      pageInfo.parsingDates.unshift(currTimestamp);
-
-      // 3. Mark article as parsed
-      articlePageInfo.parsed = true;
+      articleInfo.d = new Date().getTime();
+      articleInfo.parsed = true;
 
       const {parsingResults: pr} = fileContents;
-      const existingTags = [...new Set(pr.tags.map(t => t.name))];
-      const existingClasses = [...new Set(pr.classes.map(t => t.name))];
-      const existingAttrs = [...new Set(pr.attributes.map(t => t.name))];
-      const existingUnsupported = [...new Set(pr.unsupported.map(t => t.name))];
+      const existingTags = [
+        ...new Set(pr.filter(r => r.cat === 'tag').map(t => t.name)),
+      ];
+      const existingClasses = [
+        ...new Set(pr.filter(r => r.cat === 'class').map(t => t.name)),
+      ];
+      const existingAttrs = [
+        ...new Set(pr.filter(r => r.cat === 'attr').map(t => t.name)),
+      ];
+      const existingUnsupported = [
+        ...new Set(pr.filter(r => r.cat === 'unsupported').map(t => t.name)),
+      ];
 
-      // 4. Add statistics
       tags.forEach(tagName => {
         if (existingTags.includes(tagName)) {
-          const tagInfo = pr.tags.find(t => t.name === tagName);
-          tagInfo.count = tagInfo.count + 1;
-          tagInfo.articles.push(articleId);
+          const info = pr.find(t => t.cat === 'tag' && t.name === tagName);
+          info.count = info.count + 1;
+          info.art.push(articleId);
         } else {
-          pr.tags.push({
+          pr.push({
+            cat: 'tag',
+            info: {},
             name: tagName,
             count: 1,
-            articles: [articleId],
+            art: [articleId],
           });
         }
       });
 
       classes.forEach(className => {
         if (existingClasses.includes(className)) {
-          const classInfo = pr.classes.find(t => t.name === className);
-          classInfo.count = classInfo.count + 1;
-          classInfo.articles.push(articleId);
+          const info = pr.find(t => t.cat === 'class' && t.name === className);
+          info.count = info.count + 1;
+          info.art.push(articleId);
         } else {
-          pr.classes.push({
+          pr.push({
+            cat: 'class',
+            info: {},
             name: className,
             count: 1,
-            articles: [articleId],
+            art: [articleId],
           });
         }
       });
 
       attrs.forEach(attrName => {
         if (existingAttrs.includes(attrName)) {
-          const attrInfo = pr.attributes.find(t => t.name === attrName);
-          attrInfo.count = attrInfo.count + 1;
-          attrInfo.articles.push(articleId);
+          const info = pr.find(t => t.cat === 'attr' && t.name === attrName);
+          info.count = info.count + 1;
+          info.art.push(articleId);
         } else {
-          pr.attributes.push({
+          pr.push({
+            cat: 'attr',
+            info: {},
             name: attrName,
             count: 1,
-            articles: [articleId],
+            art: [articleId],
           });
         }
       });
 
       unsupported.forEach(unsuppName => {
         if (existingUnsupported.includes(unsuppName)) {
-          const unsuppInfo = pr.unsupported.find(t => t.name === unsuppName);
-          unsuppInfo.count = unsuppInfo.count + 1;
-          unsuppInfo.articles.push(articleId);
+          const info = pr.find(t => t.cat === 'unsupported' && t.name === unsuppName);
+          info.count = info.count + 1;
+          info.art.push(articleId);
         } else {
-          pr.unsupported.push({
+          pr.push({
+            cat: 'unsupported',
+            info: {},
             name: unsuppName,
             count: 1,
-            articles: [articleId],
+            art: [articleId],
           });
         }
       });
 
 
-      pr.tags.sort((el1, el2) => el1.count - el2.count);
-      pr.classes.sort((el1, el2) => el1.count - el2.count);
-      pr.attributes.sort((el1, el2) => el1.count - el2.count);
-      pr.unsupported.sort((el1, el2) => el1.count - el2.count);
+      pr.sort((el1, el2) => el1.count - el2.count);
     }
 
     if (!validateSchema(this.fileContents)) {
@@ -194,26 +196,26 @@ class Parser {
     const fetcherJobStringified = JSON.stringify(fetcherJob);
 
     if (fetcherJob) {
-      console.log(chalk.yellowBright('[job starting]'), fetcherJobStringified);
+      console.info(chalk.yellowBright('[job starting]'), fetcherJobStringified);
 
       const fetcher = new Fetcher(fetcherJob, this.fileContents);
 
       await fetcher.fetch();
 
       if (!fetcher.fetchResult) {
-        console.log(chalk.red('[error]'), 'Fetcher could not handle the given job', fetcherJobStringified);
+        console.error(chalk.red('[error]'), 'Fetcher could not handle the given job', fetcherJobStringified);
         return this.closeFile();
       }
 
       if (fetcher.payload) {
         await this.processFetchResult(fetcherJob, fetcher);
-        console.log(chalk.greenBright('[job done]'), fetcherJobStringified);
+        console.info(chalk.greenBright('[job done]'), fetcherJobStringified);
         setTimeout(this.parse.bind(this), this.period);
       } else {
-        console.log(chalk.red('[job failed]'), fetcherJobStringified);
+        console.error(chalk.red('[job failed]'), fetcherJobStringified);
       }
     } else {
-      console.log(chalk.greenBright('Nothing left to parse. Stopping the process'));
+      console.info(chalk.greenBright('Nothing left to parse. Stopping the process'));
       this.closeFile();
     }
   }
@@ -224,10 +226,10 @@ class Parser {
    */
   startParsingLoop() {
     try {
-      console.log(chalk.blue(`Parsing is starting, period=${this.period}`));
+      console.info(chalk.blue(`Parsing is starting, period=${this.period}`));
       this.parse();
     } catch (error) {
-      console.log(chalk.red('An error occured during the parsing:'), error);
+      console.error(chalk.red('An error occured during the parsing:'), error);
     }
   }
 }
