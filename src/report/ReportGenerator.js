@@ -31,7 +31,7 @@ class ReportGenerator {
 
     const {fileContents} = this;
     const {host, name} = fileContents.options;
-    let {parsingResults} = fileContents;
+    const {parsingResults} = fileContents;
 
     const currDate = new Date();
 
@@ -50,20 +50,28 @@ class ReportGenerator {
       data: {},
     };
 
-    parsingResults.forEach(r => r.article = r.art[0]);
+    parsingResults.forEach(r => r.articleHash = r.art[0]);
 
-    parsingResults = lodash.uniqBy(parsingResults, 'article');
+    const linksByCategory = {};
+    [...new Set(parsingResults.map(r => r.cat))]
+      .forEach(cat => linksByCategory[cat] = []);
 
-    parsingResults.forEach(result => {
+    lodash.remove(parsingResults, elem => {
+      const toRemove = linksByCategory[elem.cat].includes(elem.articleHash);
+      linksByCategory[elem.cat].push(elem.articleHash);
+      return toRemove;
+    });
+
+    parsingResults.filter(r => r.articleHash).forEach(result => {
       delete result.art;
-      let fullArticleUrl = '-';
-      if (result.article) {
-        const articleRelativeUrl = fileContents.articles
-          .find(a => a.hash === result.article)
-          .url;
-        fullArticleUrl = normalizeUrl(`${host}/${articleRelativeUrl}`);
+
+      if (result.articleHash) {
+        const articleInfo = fileContents.articles
+          .find(a => a.hash === result.articleHash);
+        const fullArticleUrl = normalizeUrl(`${host}/${articleInfo.url}`);
+        result.articleInfo = articleInfo;
+        result.articleUrl = fullArticleUrl;
       }
-      result.article = fullArticleUrl;
 
       const {cat: category} = result;
 
