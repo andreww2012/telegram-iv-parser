@@ -76,10 +76,10 @@ function makeReport(host = null, ...sections) {
   fancylog.info('Reports has been generated');
 
   const archive = archiver('zip');
-  const stream = fs.createWriteStream(`${defaultDirName}/reports.zip`);
+  const stream = fs.createWriteStream(`${defaultDirName}/${defaultDirName}.zip`);
 
   archive
-    .directory(reportsDir, false)
+    .directory(defaultDirName, false)
     .on('error', err => console.error(err))
     .pipe(stream);
 
