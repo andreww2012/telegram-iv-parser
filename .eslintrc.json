@@ -18,6 +18,7 @@
     "rules": {
         "arrow-parens": ["error", "as-needed"],
         "indent": ["error", 2],
-        "linebreak-style": ["error", "windows"]
+        "linebreak-style": ["error", "windows"],
+        "no-console": 0
     }
 }

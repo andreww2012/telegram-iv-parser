@@ -9,7 +9,7 @@ module.exports = {
     period: {
       alias: 'p',
       default: 0,
-      describe: 'An artificial delay between requests (in ms)',
+      describe: 'Delay between requests (in ms)',
     },
   },
 

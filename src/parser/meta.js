@@ -35,3 +35,8 @@ exports.tagsToIgnore = [
   'img',
   'br',
 ];
+
+exports.classesToIgnore = [
+  /^jsx-\d{6,}$/i,
+  /^wp-image-\d{2,}$/i,
+];

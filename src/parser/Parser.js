@@ -13,12 +13,12 @@ class Parser {
   /**
    * Synchronously opens a file and synchronously reads it
    * @param {string} filePath file name
-   * @param {number} period fetch frequency in ms
+   * @param {number} period fetch frequency in ms (default: 0)
    */
   constructor(filePath, period) {
-    this.period = +period || 500;
-    this.fileDescriptor = fs.openSync(filePath, 'rs+');
-    this.fileContents = jsonfile.readFileSync(this.fileDescriptor);
+    this.period = +period || 0;
+    this.filePath = filePath;
+    this.fileContents = jsonfile.readFileSync(this.filePath);
     if (!validateSchema(this.fileContents)) {
       throw new Error(
         chalk.red('[error]'),
@@ -29,18 +29,11 @@ class Parser {
 
   /**
    * @private
-   * Closes opened file
-   */
-  closeFile() {
-    fs.close(this.fileDescriptor);
-  }
-
-  /**
-   * @private
    * Rewrites file contents
    */
   rewriteFile() {
-    jsonfile.writeFileSync(this.fileDescriptor, this.fileContents);
+    jsonfile.writeFileSync(this.filePath, this.fileContents);
+    jsonfile.readFileSync(this.filePath);
   }
 
   /**
@@ -64,6 +57,7 @@ class Parser {
       if (pageWithoutLinks) {
         fileContents.stats.pagesCount = pageNum - 1;
       } else {
+        console.log('HERE!!!!!!!!!!');
         const articlesFullInfo = parsedUrls.map(url => ({
           hash: nanoid(12),
           url,
@@ -172,7 +166,6 @@ class Parser {
         }
       });
 
-
       pr.sort((el1, el2) => el1.count - el2.count);
     }
 
@@ -195,6 +188,8 @@ class Parser {
     const fetcherJob = generateFetcherJob(this.fileContents);
     const fetcherJobStringified = JSON.stringify(fetcherJob);
 
+    console.log(fetcherJob);
+
     if (fetcherJob) {
       console.info(chalk.yellowBright('[job starting]'), fetcherJobStringified);
 
@@ -204,7 +199,6 @@ class Parser {
 
       if (!fetcher.fetchResult) {
         console.error(chalk.red('[error]'), 'Fetcher could not handle the given job', fetcherJobStringified);
-        return this.closeFile();
       }
 
       if (fetcher.payload) {
@@ -215,8 +209,10 @@ class Parser {
         console.error(chalk.red('[job failed]'), fetcherJobStringified);
       }
     } else {
+      // console.log(this.fileContents);
+      // this.rewriteFile();
       console.info(chalk.greenBright('Nothing left to parse. Stopping the process'));
-      this.closeFile();
+      process.exit(1);
     }
   }
 

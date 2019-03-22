@@ -22,7 +22,7 @@
       outline: 4px solid greenyellow;
     }
 
-    a.site-link:visited {
+    a:visited {
       color: red;
     }
 
@@ -75,6 +75,7 @@
           button.classList.add('button');
           button.dataset.checkOtherTemplateLink = true;
           button.setAttribute('href', `https://instantview.telegram.org/contest/${linkContainer.dataset.host}/template${number}/?url=${linkContainer.dataset.link}`);
+          button.setAttribute('target', '_blank');
           button.text = `#${number}`;
           linksWrapper.appendChild(button);
         });
@@ -129,11 +130,11 @@
           <div class="field">
             <label class="label">Templates to check</label>
             <div class="control">
-              <input class="input is-large" placeholder="12, 15, 28" id="template-num">
+              <input class="input is-medium" placeholder="12, 15, 28" id="template-num">
             </div>
           </div>
 
-          <div class="tabs is-medium is-boxed is-centered" id="tabs">
+          <div class="tabs is-boxed is-centered" id="tabs">
             <ul>
               <li class="is-active" data-tab="class"><a>Classes</a></li>
               <li data-tab="unsupported"><a>Unsupported elements</a></li>
@@ -147,107 +148,107 @@
 
     <div class="wrapper__item wrapper__item_position_bottom">
       <div class="container">
-        <section class="section">
-          <table class="table is-bordered is-striped is-hoverable is-fullwidth" data-elem="class">
-            <thead>
-              <th width="30%">Name</th>
-              <th>Count</th>
-              <th width="50%">Link</th>
-              <th width="20%">Check templates</th>
-            </thead>
-            <tbody>
-              {{#each data.class}}
-                <tr>
-                  <td><samp>.{{name}}</samp></td>
-                  <td><span class="tag is-medium is-rounded is-info">{{count}}</span></td>
-                  <td><a href="{{articleUrl}}" target="_blank" class="site-link">{{articleUrl}}</a></td>
-                  <td>
-                    <div class="template-links" data-link="{{articleUrl}}" data-host={{../host}}>
-                      <div class="buttons">
-                        <a class="button is-info" href="https://instantview.telegram.org/my/elementy.ru/?url={{articleUrl}}" target="_blank">My</a>
-                      </div>
+        <table class="table is-bordered is-striped is-hoverable is-fullwidth" data-elem="class">
+          <thead>
+            <th width="30%">Name</th>
+            <th>Count</th>
+            <th width="50%">Link</th>
+            <th width="20%">Check templates</th>
+          </thead>
+          <tbody>
+            {{#each data.class}}
+              <tr>
+                <td><samp>{{name}}</samp></td>
+                <td><span class="tag is-medium is-rounded is-info">{{count}}</span></td>
+                <td>
+                  <a href="{{articleUrl}}" target="_blank" class="site-link">{{articleUrl}}</a>
+                </td>
+                <td>
+                  <div class="template-links" data-link="{{articleUrl}}" data-host={{../host}}>
+                    <div class="buttons">
+                      <a class="button is-info" href="https://instantview.telegram.org/my/elementy.ru/?url={{articleUrl}}" target="_blank">My</a>
                     </div>
-                  </td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table>
+                  </div>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
 
-          <table class="table is-bordered is-striped is-hoverable is-fullwidth" data-elem="unsupported">
-            <thead>
-              <th width="30%">Name</th>
-              <th>Count</th>
-              <th width="50%">Link</th>
-              <th width="20%">Check templates</th>
-            </thead>
-            <tbody>
-              {{#each data.unsupported}}
-                <tr>
-                  <td><span class="tag is-danger is-medium has-font-weight-bold"><samp>{{name}}</samp></span></td>
-                  <td><span class="tag is-medium is-rounded is-info">{{count}}</span></td>
-                  <td><a href="{{articleUrl}}" target="_blank" class="site-link">{{articleUrl}}</a></td>
-                  <td>
-                    <div class="template-links" data-link="{{articleUrl}}" data-host={{../host}}>
-                      <div class="buttons">
-                        <a class="button is-info" href="https://instantview.telegram.org/my/elementy.ru/?url={{articleUrl}}" target="_blank">My</a>
-                      </div>
+        <table class="table is-bordered is-striped is-hoverable is-fullwidth" data-elem="unsupported">
+          <thead>
+            <th width="30%">Name</th>
+            <th>Count</th>
+            <th width="50%">Link</th>
+            <th width="20%">Check templates</th>
+          </thead>
+          <tbody>
+            {{#each data.unsupported}}
+              <tr>
+                <td><span class="tag is-danger is-medium has-font-weight-bold"><samp>{{name}}</samp></span></td>
+                <td><span class="tag is-medium is-rounded is-info">{{count}}</span></td>
+                <td><a href="{{articleUrl}}" target="_blank" class="site-link">{{articleUrl}}</a></td>
+                <td>
+                  <div class="template-links" data-link="{{articleUrl}}" data-host={{../host}}>
+                    <div class="buttons">
+                      <a class="button is-info" href="https://instantview.telegram.org/my/elementy.ru/?url={{articleUrl}}" target="_blank">My</a>
                     </div>
-                  </td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table>
+                  </div>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
 
-          <table class="table is-bordered is-striped is-hoverable is-fullwidth" data-elem="tag">
-            <thead>
-              <th width="30%">Name</th>
-              <th>Count</th>
-              <th width="50%">Link</th>
-              <th width="20%">Check templates</th>
-            </thead>
-            <tbody>
-              {{#each data.tag}}
-                <tr>
-                  <td><samp>&lt;{{name}}&gt;</samp></td>
-                  <td><span class="tag is-medium is-rounded is-info">{{count}}</span></td>
-                  <td><a href="{{articleUrl}}" target="_blank" class="site-link">{{articleUrl}}</a></td>
-                  <td>
-                    <div class="template-links" data-link="{{articleUrl}}" data-host={{../host}}>
-                      <div class="buttons">
-                        <a class="button is-info" href="https://instantview.telegram.org/my/elementy.ru/?url={{articleUrl}}" target="_blank">My</a>
-                      </div>
+        <table class="table is-bordered is-striped is-hoverable is-fullwidth" data-elem="tag">
+          <thead>
+            <th width="30%">Name</th>
+            <th>Count</th>
+            <th width="50%">Link</th>
+            <th width="20%">Check templates</th>
+          </thead>
+          <tbody>
+            {{#each data.tag}}
+              <tr>
+                <td><samp>&lt;{{name}}&gt;</samp></td>
+                <td><span class="tag is-medium is-rounded is-info">{{count}}</span></td>
+                <td><a href="{{articleUrl}}" target="_blank" class="site-link">{{articleUrl}}</a></td>
+                <td>
+                  <div class="template-links" data-link="{{articleUrl}}" data-host={{../host}}>
+                    <div class="buttons">
+                      <a class="button is-info" href="https://instantview.telegram.org/my/elementy.ru/?url={{articleUrl}}" target="_blank">My</a>
                     </div>
-                  </td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table>
+                  </div>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
 
-          <table class="table is-bordered is-striped is-hoverable is-fullwidth" data-elem="attr">
-            <thead>
-              <th width="30%">Name</th>
-              <th>Count</th>
-              <th width="50%">Link</th>
-              <th width="20%">Check templates</th>
-            </thead>
-            <tbody>
-              {{#each data.attr}}
-                <tr>
-                  <td><samp>@{{name}}</samp></td>
-                  <td><span class="tag is-medium is-rounded is-info">{{count}}</span></td>
-                  <td><a href="{{articleUrl}}" target="_blank" class="site-link">{{articleUrl}}</a></td>
-                  <td>
-                    <div class="template-links" data-link="{{articleUrl}}" data-host={{../host}}>
-                      <div class="buttons">
-                        <a class="button is-info" href="https://instantview.telegram.org/my/elementy.ru/?url={{articleUrl}}" target="_blank">My</a>
-                      </div>
+        <table class="table is-bordered is-striped is-hoverable is-fullwidth" data-elem="attr">
+          <thead>
+            <th width="30%">Name</th>
+            <th>Count</th>
+            <th width="50%">Link</th>
+            <th width="20%">Check templates</th>
+          </thead>
+          <tbody>
+            {{#each data.attr}}
+              <tr>
+                <td><samp>@{{name}}</samp></td>
+                <td><span class="tag is-medium is-rounded is-info">{{count}}</span></td>
+                <td><a href="{{articleUrl}}" target="_blank" class="site-link">{{articleUrl}}</a></td>
+                <td>
+                  <div class="template-links" data-link="{{articleUrl}}" data-host={{../host}}>
+                    <div class="buttons">
+                      <a class="button is-info" href="https://instantview.telegram.org/my/elementy.ru/?url={{articleUrl}}" target="_blank">My</a>
                     </div>
-                  </td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table>
-        </section>
+                  </div>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

@@ -1,6 +1,5 @@
 const process = require('process');
 require('pretty-error').start();
-
 require('./src/fs').initStructure();
 
 require('yargs').commandDir('src/commands')
@@ -9,6 +8,6 @@ require('yargs').commandDir('src/commands')
   .argv;
 
 process.on('unhandledRejection', err => {
-  log.error('Unhandled rejection occured:', err);
+  console.error('Unhandled rejection occured:', err);
   process.exit(1);
 });

@@ -5,7 +5,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const lodash = require('lodash');
 const isAbsoluteUrl = require('is-absolute-url');
-const {unsupportedPairs, tagsToIgnore} = require('./meta');
+const {unsupportedPairs, tagsToIgnore, classesToIgnore} = require('./meta');
 
 /**
  * Just fetcher
@@ -52,7 +52,9 @@ class Fetcher {
 
       this.fetchResult = {
         requestSuccess: true,
-        httpSuccess: (status >= 200 && status < 300 || status === 404),
+        httpSuccess: (status >= 200 && status < 300
+          || status === 404
+          || status === 410),
         status,
         response: data,
       };
@@ -209,13 +211,23 @@ class Fetcher {
         });
       });
 
-      const tagsNormalized = lodash.pull([...tags], ...tagsToIgnore);
+      const tagsNormalized = lodash.pull([...tags], ...tagsToIgnore)
+        .filter(e => e);
+
+      const attrsNormalized = [...attrs].filter(e => e);
+
+      const classesNormalized = [...classes].filter(className => {
+        return className
+          && !classesToIgnore.some(classRegex => classRegex.test(className));
+      });
+
+      const unsupportedNormalized = [...unsupported].filter(e => e);
 
       this.payload = {
         tags: tagsNormalized,
-        attrs: [...attrs],
-        classes: [...classes],
-        unsupported: [...unsupported],
+        attrs: attrsNormalized,
+        classes: classesNormalized,
+        unsupported: unsupportedNormalized,
       };
     } else {
       this.payload = null;
