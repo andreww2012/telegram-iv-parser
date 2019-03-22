@@ -31,13 +31,13 @@ function makeReport(host = null, ...sections) {
 
   const datetime = dateFns.format(new Date(), 'DD.MM.YYYY HH:mm:ss');
 
-  let hostsHtml = `<h1>All sites</h1><p>${datetime}</p><h3><mark><a href="../reports.zip">Download reports in ZIP</a></mark></h3><ul>`;
+  let hostsHtml = `<h1>All sites</h1><p><code>${datetime}</code></p><h3><mark><a href="../reports.zip">Download reports in ZIP</a></mark></h3><ul>`;
 
   for (let i = 0; i < hosts.length; i++) {
     const hostName = hosts[i];
 
     hostsHtml += `<li><a href="${hostName}/index.html">${hostName}</a></li>`;
-    let sectionsHtml = `<h1><a href="../index.html">All sites</a> / ${hostName}</h1><p>${datetime}</p><ul>`;
+    let sectionsHtml = `<h1><a href="../index.html">All sites</a> / ${hostName}</h1><p><code>${datetime}</code></p><ul>`;
 
     let siteSections = singleHost
       ? sections

@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-const fs = require('fs');
 const jsonfile = require('jsonfile');
 const chalk = require('chalk');
 const nanoid = require('nanoid');
@@ -57,7 +55,6 @@ class Parser {
       if (pageWithoutLinks) {
         fileContents.stats.pagesCount = pageNum - 1;
       } else {
-        console.log('HERE!!!!!!!!!!');
         const articlesFullInfo = parsedUrls.map(url => ({
           hash: nanoid(12),
           url,

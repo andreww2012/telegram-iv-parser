@@ -1,11 +1,15 @@
 const unsupportedCombinationsDescription = [
   [
-    ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'em', 'i', 's', 'u', 'footer', 'mark'],
+    ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'em', 'i', 's', 'u', 'footer', 'mark', 'ul', 'ol', 'figcaption', 'summary'],
     ['img', 'video', 'iframe', 'audio', 'footer'],
   ],
   [
     ['blockquote', 'aside'],
     ['img', 'video', 'audio', 'iframe'],
+  ],
+  [
+    ['ul', 'ol'],
+    ['aside', 'blockquote', 'figure', 'picture'],
   ],
   [
     ['blockquote', 'aside', 'img', 'source', 'picture', 'iframe', 'video', 'audio', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
@@ -37,6 +41,6 @@ exports.tagsToIgnore = [
 ];
 
 exports.classesToIgnore = [
-  /^jsx-\d{6,}$/i,
-  /^wp-image-\d{2,}$/i,
+  /jsx-\d{6,}/i,
+  /wp-image-\d{2,}/i,
 ];

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const {URL} = require('url');
 const normalizeUrl = require('normalize-url');
 const axios = require('axios');
@@ -143,8 +142,7 @@ class Fetcher {
       });
       this.payload = {parsedUrls};
 
-      if (!parsedUrls.length
-          && !fileContents.options.pagination.totalNumberOfPagesSelector) {
+      if (!parsedUrls.length) {
         this.payload.pageWithoutLinks = true;
       }
     } else {
