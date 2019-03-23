@@ -1,5 +1,6 @@
 const path = require('path');
 const jsonfile = require('jsonfile');
+const fancylog = require('fancy-log');
 const {validateSchema} = require('../schema');
 const config = require('../config');
 
@@ -12,7 +13,14 @@ const config = require('../config');
 function readSite(host, section) {
   const fullPath = path.resolve(`${config.dirs.sitesDir}/${host}/${section}.json`);
 
-  const fileContents = jsonfile.readFileSync(fullPath);
+  let fileContents = '';
+
+  try {
+    fileContents = jsonfile.readFileSync(fullPath);
+  } catch (error) {
+    fancylog.error(`Error occured during opening the file ${fullPath}: ${error.message}`);
+    return;
+  }
 
   const fileValid = validateSchema(fileContents);
 

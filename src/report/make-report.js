@@ -55,6 +55,12 @@ function makeReport(host = null, ...sections) {
       sectionsHtml += `<li><a href="${reportFileName}">${siteSectionName}</a></li>`;
 
       const fileContents = readSite(hostName, siteSectionName);
+
+      if (!fileContents) {
+        fancylog.warn(`Omitting ${hostName}/${siteSectionName} because of the error...`);
+        continue;
+      }
+
       const reportGenerator = new ReportGenerator(fileContents);
       const {html} = reportGenerator.generate();
 
@@ -88,6 +94,7 @@ function makeReport(host = null, ...sections) {
   });
   archive.finalize();
 
+  // eslint-disable-next-line no-undef
   return path.join(process.cwd(), reportsDir, 'index.html');
 }
 

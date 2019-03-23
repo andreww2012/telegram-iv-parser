@@ -8,11 +8,11 @@ const unsupportedCombinationsDescription = [
     ['img', 'video', 'audio', 'iframe'],
   ],
   [
-    ['ul', 'ol'],
+    ['ul', 'ol', 'figcaption'],
     ['aside', 'blockquote', 'figure', 'picture'],
   ],
   [
-    ['blockquote', 'aside', 'img', 'source', 'picture', 'iframe', 'video', 'audio', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+    ['blockquote', 'aside', 'img', 'source', 'picture', 'iframe', 'video', 'audio', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'figcaption'],
   ],
 ];
 
