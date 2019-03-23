@@ -129,16 +129,17 @@ class Fetcher {
 
     if (httpSuccess) {
       const $ = cheerio.load(response);
-      // eslint-disable-next-line prefer-const
-      let parsedUrls = [];
+      const parsedUrls = [];
       $(linkSelector).each((i, el) => {
         let {href} = el.attribs;
-        if (!isAbsoluteUrl(href)) {
-          href = `${host}/${href}`;
+        if (href) {
+          if (!isAbsoluteUrl(href)) {
+            href = `${host}/${href}`;
+          }
+          const urlInfo = new URL(normalizeUrl(href));
+          const normHostlessUrl = `${urlInfo.pathname}${urlInfo.search}`;
+          parsedUrls.push(normHostlessUrl);
         }
-        const urlInfo = new URL(normalizeUrl(href));
-        const normHostlessUrl = `${urlInfo.pathname}${urlInfo.search}`;
-        parsedUrls.push(normHostlessUrl);
       });
       this.payload = {parsedUrls};
 
