@@ -85,7 +85,7 @@ function makeReport(host = null, ...sections) {
   const stream = fs.createWriteStream(`${defaultDirName}/${defaultDirName}.zip`);
 
   archive
-    .directory(defaultDirName, false)
+    .glob(`${defaultDirName}/**`, false)
     .on('error', err => console.error(err))
     .pipe(stream);
 
