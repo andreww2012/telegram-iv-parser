@@ -3,7 +3,7 @@ const config = require('../config');
 
 module.exports = {
   command: 'launch <sitename> <section> [period]',
-  aliases: ['start', 'parse'],
+  aliases: ['start', 'parse', 's'],
   describe: 'Starts parsing process',
   builder: {
     period: {
