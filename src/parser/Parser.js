@@ -31,7 +31,6 @@ class Parser {
    */
   rewriteFile() {
     jsonfile.writeFileSync(this.filePath, this.fileContents);
-    jsonfile.readFileSync(this.filePath);
   }
 
   /**
@@ -52,27 +51,35 @@ class Parser {
     if (fetcherJob.type === Fetcher.fetchTypesEnum.fetchPageLinks) {
       const {pageNum} = jobData;
       const {parsedUrls, pageWithoutLinks} = payload;
+      const existingUrls = this.fileContents.articles.map(({url}) => url);
+
       if (pageWithoutLinks) {
         fileContents.stats.pagesCount = pageNum - 1;
       } else {
-        const articlesFullInfo = parsedUrls.map(url => ({
-          hash: nanoid(12),
-          url,
-          fromPage: pageNum,
-          code: fetcherInstance.fetchResult.status,
-          d: 0,
-          parsed: false,
-          checked: false,
-        }));
+        const articlesFullInfo = parsedUrls
+          .filter(url => !existingUrls.includes(url))
+          .map(url => ({
+            hash: nanoid(12),
+            url,
+            fromPage: pageNum,
+            code: fetcherInstance.fetchResult.status,
+            d: 0,
+            parsed: false,
+            checked: false,
+          }));
 
         const articleHashes = articlesFullInfo.map(({hash}) => hash);
 
-        fileContents.pages.push({
-          num: pageNum,
-          art: articleHashes,
-          d: new Date().getTime(),
-        });
-        fileContents.articles.push(...articlesFullInfo);
+        if (articleHashes.length) {
+          fileContents.pages.push({
+            num: pageNum,
+            art: articleHashes,
+            d: new Date().getTime(),
+          });
+          fileContents.articles.push(...articlesFullInfo);
+        } else {
+          fileContents.stats.pagesCount = pageNum - 1;
+        }
       }
     }
 
@@ -185,7 +192,9 @@ class Parser {
     const fetcherJob = generateFetcherJob(this.fileContents);
     const fetcherJobStringified = JSON.stringify(fetcherJob);
 
-    console.log(fetcherJob);
+    if (fetcherJob) {
+      console.log(fetcherJob);
+    }
 
     if (fetcherJob) {
       console.info(chalk.yellowBright('[job starting]'), fetcherJobStringified);

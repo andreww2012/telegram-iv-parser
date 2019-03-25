@@ -1,54 +1,73 @@
-
-
 module.exports = [
   {
     name: 'host',
-    message: 'Host name (test.ru, subdomain.example.com):',
+    message: 'Host name without subdomain:',
     validate(input) {
       return !!input;
     },
+  },
+
+  {
+    name: 'subdomain',
+    message: 'Subdomain ("www", etc):',
+  },
+
+  {
+    name: 'httpOnly',
+    message: 'Site available only through http (NOT https)? (default = NO)',
+    type: 'confirm',
+    default: false,
   },
 
   {
     name: 'sectionName',
-    message: 'Unique section name (latin symbols, hyphens and underscores):',
+    message: 'Unique section name(s) (comma separated):',
     validate(input) {
-      return !!input;
+      if (!input) {
+        return 'Section name is required';
+      }
+      return true;
     },
   },
 
-  {
-    name: 'paginationLastPageSelector',
-    message: 'Selector containing page count (optional):',
-  },
+  // {
+  //   name: 'paginationLastPageSelector',
+  //   message: 'Selector containing page count (optional):',
+  // },
 
   {
     name: 'paginationReversed',
-    message: 'If pagination reversed?',
+    message: 'If pagination reversed? (default = NO)',
     type: 'confirm',
     default: false,
   },
 
   {
     name: 'pagePattern',
-    message: 'Section pages pattern (news/page/{0}.html):',
+    message: 'Section page pattern ({0} for page number, {1} for section name (required when multiple sections was specified)):',
     validate(input) {
-      return input && input.includes('{0}');
+      if (!input.includes('{0}')) {
+        return '{0} is required';
+      }
+      return true;
     },
   },
 
   {
     name: 'firstPageUrl',
-    message: 'If the first page is not available by this pattern, specify a different URL for it (MUST SPECIFY WHEN PAGINATION IS REVERSED):',
+    message: 'If the first page is not available by this pattern, specify a different URL for it:',
     default: '',
     validate(input, {paginationReversed}) {
-      return !(paginationReversed && !input);
+      if (paginationReversed && !input) {
+        return 'You must specify this field as pagination is reversed';
+      }
+      return true;
     },
   },
 
   {
     name: 'linkSelector',
-    message: 'Selector for article links:',
+    message: 'Selector(s) for article links (comma separated):',
     validate(input) {
       return !!input;
     },
@@ -56,7 +75,8 @@ module.exports = [
 
   {
     name: 'articleBodySelector',
-    message: 'Selector for article body:',
+    message: 'Selector for article body (default: body):',
+    default: 'body',
     validate(input) {
       return !!input;
     },

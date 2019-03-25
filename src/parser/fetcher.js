@@ -84,7 +84,10 @@ class Fetcher {
       return;
     }
 
-    const urlNorm = normalizeUrl(`${host}/${firstPageUrl}`);
+    const urlNorm = normalizeUrl(
+      `${host}/${firstPageUrl}`,
+      {forceHttps: true, stripWWW: false},
+    );
 
     await this.fetchPage(urlNorm);
 
@@ -121,7 +124,10 @@ class Fetcher {
       : pagePattern.replace('{0}', pageNum);
 
     const {host} = fileContents.options;
-    const urlNorm = normalizeUrl(`${host}/${pageUrl}`);
+    const urlNorm = normalizeUrl(
+      `${host}/${pageUrl}`,
+      {forceHttps: true, stripWWW: false},
+    );
 
     await this.fetchPage(urlNorm);
 
@@ -162,7 +168,10 @@ class Fetcher {
       .find(a => a.hash === articleId);
 
     const {host} = this.fileContents.options;
-    const urlNorm = normalizeUrl(`${host}/${articleUrl}`);
+    const urlNorm = normalizeUrl(
+      `${host}/${articleUrl}`,
+      {forceHttps: true, stripWWW: false},
+    );
 
     await this.fetchPage(urlNorm);
 
@@ -213,7 +222,7 @@ class Fetcher {
       const tagsNormalized = lodash.pull([...tags], ...tagsToIgnore)
         .filter(e => e);
 
-      const attrsNormalized = [...attrs].filter(e => e);
+      const attrsNormalized = [...attrs].filter(e => !e.includes('"'));
 
       const classesNormalized = [...classes].filter(className => {
         return className
