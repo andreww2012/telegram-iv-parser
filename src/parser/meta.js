@@ -1,18 +1,18 @@
 const unsupportedCombinationsDescription = [
   [
-    ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'em', 'i', 's', 'u', 'footer', 'mark', 'ul', 'ol', 'figcaption', 'summary', 'sup', 'sub'],
+    ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'em', 'i', 's', 'u', 'footer', 'mark', 'ul', 'ol', 'figcaption', 'summary', 'sup', 'sub', 'table'],
     ['img', 'video', 'iframe', 'audio', 'footer'],
   ],
   [
-    ['blockquote', 'aside'],
-    ['img', 'video', 'audio', 'iframe'],
+    ['blockquote', 'aside', 'a'],
+    ['img', 'video', 'audio', 'iframe', 'table'],
   ],
   [
-    ['ul', 'ol', 'figcaption'],
-    ['aside', 'blockquote', 'figure', 'picture'],
+    ['ul', 'ol', 'figcaption', 'a'],
+    ['aside', 'blockquote', 'figure', 'picture', 'table'],
   ],
   [
-    ['blockquote', 'aside', 'img', 'source', 'picture', 'iframe', 'video', 'audio', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'figcaption', 'figure'],
+    ['blockquote', 'aside', 'img', 'source', 'picture', 'iframe', 'video', 'audio', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'figcaption', 'figure', 'table'],
   ],
 ];
 
