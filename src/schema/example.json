@@ -1,16 +1,16 @@
 {
   "options": {
     "host": "test.ru",
+    "subdomain": "",
     "name": "allnews",
 
     "section": {
       "pagePattern": "news/page/{0}.html",
       "firstPageUrl": "news",
-      "linkSelector": ""
+      "linkSelector": [""]
     },
 
     "pagination": {
-      "totalNumberOfPagesSelector": "",
       "reversed": false,
       "enabled": true
     },

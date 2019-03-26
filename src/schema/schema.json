@@ -84,6 +84,9 @@
         "host": {
           "type": "string"
         },
+        "subdomain": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
@@ -126,11 +129,8 @@
     },
     "Pagination": {
       "type": "object",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "totalNumberOfPagesSelector": {
-          "type": "string"
-        },
         "reversed": {
           "type": "boolean"
         },
@@ -139,9 +139,7 @@
         }
       },
       "required": [
-        "enabled",
-        "reversed",
-        "totalNumberOfPagesSelector"
+        "enabled"
       ],
       "title": "Pagination"
     },
@@ -156,7 +154,15 @@
           "type": "string"
         },
         "linkSelector": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {}
+            }
+          ]
         }
       },
       "required": [

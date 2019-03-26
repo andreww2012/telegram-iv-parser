@@ -1,10 +1,11 @@
+const fs = require('fs');
 const {Parser} = require('../parser');
 const config = require('../config');
 
 module.exports = {
-  command: 'launch <sitename> <section> [period]',
+  command: 'launch <sitename> [section] [period]',
   aliases: ['start', 'parse', 's'],
-  describe: 'Starts parsing process',
+  describe: 'Starts parsing process for all sections',
   builder: {
     period: {
       alias: 'p',
@@ -14,9 +15,20 @@ module.exports = {
   },
 
   handler({sitename, section, period}) {
-    new Parser(
-      `${config.dirs.sitesDir}/${sitename}/${section}.json`,
-      period,
-    ).startParsingLoop();
+    let sections = [];
+
+    if (section) {
+      sections.push(`${section}.json`);
+    } else {
+      const files = fs.readdirSync(`${config.dirs.sitesDir}/${sitename}`);
+      sections = files.filter(ssName => ssName.endsWith('.json'));
+    }
+
+    sections.forEach(s => {
+      new Parser(
+        `${config.dirs.sitesDir}/${sitename}/${s}`,
+        period,
+      ).startParsingLoop();
+    });
   },
 };

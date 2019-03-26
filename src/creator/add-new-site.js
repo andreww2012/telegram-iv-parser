@@ -1,4 +1,3 @@
-const cssWhat = require('css-what');
 const config = require('../config');
 const {addFile} = require('../fs');
 const {validateSchema} = require('../schema');
@@ -13,27 +12,24 @@ function generateSiteFile(answers) {
 
   const {
     host,
+    subdomain,
+    noPagination,
+    paginationReversed,
     sectionName,
     pagePattern,
     firstPageUrl,
     linkSelector,
-    paginationLastPageSelector,
-    paginationReversed,
     articleBodySelector,
     selectorsThatMustBeIgnored,
   } = answers;
 
-  const ignoreSelectors = selectorsThatMustBeIgnored
-    .split(',')
-    .map(s => s.trim())
-    .filter(s => {
-      try {
-        // Throws an exception when a selector is invalid
-        return cssWhat(s);
-      } catch (error) {
-        return false;
-      }
-    });
+  let pagesCount = 0;
+
+  if (noPagination) {
+    pagesCount = 1;
+  } else if (!paginationReversed) {
+    pagesCount = Number.MAX_SAFE_INTEGER;
+  }
 
   const structure = {
     options: {
@@ -47,19 +43,18 @@ function generateSiteFile(answers) {
       },
 
       pagination: {
-        totalNumberOfPagesSelector: paginationLastPageSelector,
         reversed: paginationReversed,
-        enabled: true,
+        enabled: !noPagination,
       },
 
       page: {
         articleBodySelector,
-        ignoreSelectors,
+        ignoreSelectors: selectorsThatMustBeIgnored,
       },
     },
 
     stats: {
-      pagesCount: 0,
+      pagesCount,
       fileGeneratedDate: currentTimestamp,
       d: 0,
     },
@@ -69,6 +64,10 @@ function generateSiteFile(answers) {
     articles: [],
   };
 
+  if (subdomain) {
+    structure.options.subdomain = subdomain;
+  }
+
   return structure;
 }
 
@@ -77,22 +76,31 @@ function generateSiteFile(answers) {
  * @param {object} answers object with data
  */
 function addNewSite(answers) {
-  const {host, sectionName} = answers;
+  const {host, sectionNames, pagePatterns} = answers;
 
-  const fileContents = generateSiteFile(answers);
+  sectionNames.forEach(sectionName => {
+    const pagePattern = pagePatterns.replace(/\{1\}/, sectionName);
 
-  const isSchemaValid = validateSchema(fileContents);
+    const fileContents = generateSiteFile({
+      sectionName,
+      pagePattern,
+      ...answers,
+    });
 
-  if (!isSchemaValid) {
-    throw new Error(`It it not possible to generate a valid file. Probably the schema is broken.: ${JSON.stringify(validateSchema.errors)}`);
-  }
+    const isSchemaValid = validateSchema(fileContents);
 
-  const filePath = `${config.dirs.sitesDir}/${host}`;
-  const fileName = `${sectionName}.json`;
+    if (!isSchemaValid) {
+      console.log(`It it not possible to generate a valid file for ${sectionName} section:`);
+      console.log(validateSchema.errors);
+    } else {
+      const filePath = `${config.dirs.sitesDir}/${host}`;
+      const fileName = `${sectionName}.json`;
 
-  addFile(filePath, fileName, fileContents);
+      addFile(filePath, fileName, fileContents);
 
-  console.log(`File created: ${filePath}`);
+      console.log(`File created: ${filePath}/${fileName}`);
+    }
+  });
 }
 
 exports.addNewSite = addNewSite;

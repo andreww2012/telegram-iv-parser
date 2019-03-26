@@ -1,53 +1,109 @@
+/* eslint-disable require-jsdoc */
+const {URL} = require('url');
+const normalizeUrl = require('normalize-url');
+const {uniq} = require('lodash');
+const cssWhat = require('css-what');
+
+function normalizeHost(dirtyHost) {
+  return new URL(normalizeUrl(dirtyHost)).hostname;
+}
+
+function parseList(list) {
+  return uniq(list.split(',').map(n => n.trim()).filter(n => n));
+}
+
 module.exports = [
   {
     name: 'host',
-    message: 'Host name without subdomain:',
+    message: 'Host name only:',
+    filter(input) {
+      return normalizeHost(input);
+    },
     validate(input) {
       return !!input;
+    },
+    transform(input) {
+      return normalizeHost(input);
     },
   },
 
   {
     name: 'subdomain',
-    message: 'Subdomain ("www", etc):',
-  },
-
-  {
-    name: 'httpOnly',
-    message: 'Site available only through http (NOT https)? (default = NO)',
-    type: 'confirm',
-    default: false,
-  },
-
-  {
-    name: 'sectionName',
-    message: 'Unique section name(s) (comma separated):',
+    message: 'Subdomain if needed ("www", etc):',
     validate(input) {
-      if (!input) {
-        return 'Section name is required';
-      }
-      return true;
+      return !input
+        || /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(input.trim());
     },
   },
 
   // {
-  //   name: 'paginationLastPageSelector',
-  //   message: 'Selector containing page count (optional):',
+  //   name: 'httpOnly',
+  //   message: 'Site available only through http? (default = NO):',
+  //   type: 'confirm',
+  //   default: false,
   // },
 
   {
-    name: 'paginationReversed',
-    message: 'If pagination reversed? (default = NO)',
+    name: 'noPagination',
+    message: 'Is pagination not exists? (default = NO):',
     type: 'confirm',
     default: false,
   },
 
   {
-    name: 'pagePattern',
-    message: 'Section page pattern ({0} for page number, {1} for section name (required when multiple sections was specified)):',
+    name: 'paginationReversed',
+    message: 'Is pagination reversed? (default = NO):',
+    type: 'confirm',
+    default: false,
+    when({noPagination}) {
+      return !noPagination;
+    },
+  },
+
+  {
+    name: 'sectionNames',
+    message: 'Unique section name(s) (comma separated):',
+    filter(input) {
+      return parseList(input);
+    },
     validate(input) {
-      if (!input.includes('{0}')) {
-        return '{0} is required';
+      return input.length > 0;
+    },
+    transform(input) {
+      return parseList(input).join(', ');
+    },
+  },
+
+  {
+    name: 'pagePatterns',
+    message({noPagination, sectionNames}) {
+      const shouldUse = [];
+      if (!noPagination) {
+        shouldUse.push([0, 'page number']);
+      }
+      if (sectionNames.length > 1) {
+        shouldUse.push([1, 'section name']);
+      }
+      let message = 'Section page pattern';
+      if (shouldUse.length) {
+        message += ' (';
+        shouldUse.forEach((elem, i) => {
+          message += `{${elem[0]}}: ${elem[1]}`;
+          if (i != shouldUse.length - 1) {
+            message += ', ';
+          }
+        });
+        message += ')';
+      }
+      message += ':';
+      return message;
+    },
+    validate(input, {noPagination, sectionNames}) {
+      if (!noPagination && !input.includes('{0}')) {
+        return 'Page pattern is required';
+      }
+      if (sectionNames.length > 1 && !input.includes('{1}')) {
+        return 'Page pattern is required';
       }
       return true;
     },
@@ -63,13 +119,22 @@ module.exports = [
       }
       return true;
     },
+    when({noPagination}) {
+      return !noPagination;
+    },
   },
 
   {
     name: 'linkSelector',
     message: 'Selector(s) for article links (comma separated):',
+    filter(input) {
+      return parseList(input);
+    },
     validate(input) {
-      return !!input;
+      return input.length > 0;
+    },
+    transform(input) {
+      return parseList(input).join(', ');
     },
   },
 
@@ -85,5 +150,18 @@ module.exports = [
   {
     name: 'selectorsThatMustBeIgnored',
     message: 'Selector(s) that must be ignored (comma separated):',
+    filter(input) {
+      return parseList(input).filter(s => {
+        try {
+          // Throws an exception when a selector is invalid
+          return cssWhat(s);
+        } catch (error) {
+          return false;
+        }
+      });
+    },
+    transform(input) {
+      return parseList(input).join(', ');
+    },
   },
 ];

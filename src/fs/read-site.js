@@ -25,7 +25,9 @@ function readSite(host, section) {
   const fileValid = validateSchema(fileContents);
 
   if (!fileValid) {
-    throw new Error(`Cannot open ${fullPath}: does not match the schema`);
+    fancylog.error(`Cannot open ${fullPath}: file does not match the schema`);
+    console.log(validateSchema.errors);
+    return;
   }
 
   return fileContents;

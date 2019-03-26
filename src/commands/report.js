@@ -31,6 +31,10 @@ module.exports = {
   handler({site, per, noopen}) {
     const [host = null, ...sections] = site.split('@');
 
+    if (per) {
+      fancylog.info(`Report will be generated every ${per} minutes`);
+    }
+
     const reportPath = makeReport(host, ...sections);
 
     if (!noopen) {

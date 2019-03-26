@@ -71,7 +71,7 @@ class Fetcher {
    */
   async fetchPageCount() {
     const {options} = this.fileContents;
-    const {host} = options;
+    const {host, subdomain = ''} = options;
     const {firstPageUrl} = options.section;
     const {totalNumberOfPagesSelector} = options.pagination;
 
@@ -85,8 +85,8 @@ class Fetcher {
     }
 
     const urlNorm = normalizeUrl(
-      `${host}/${firstPageUrl}`,
-      {forceHttps: true, stripWWW: false},
+      `${subdomain}.${host}/${firstPageUrl}`,
+      {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
     );
 
     await this.fetchPage(urlNorm);
@@ -123,20 +123,23 @@ class Fetcher {
       ? firstPageUrl
       : pagePattern.replace('{0}', pageNum);
 
-    const {host} = fileContents.options;
+    const {host, subdomain = ''} = fileContents.options;
     const urlNorm = normalizeUrl(
-      `${host}/${pageUrl}`,
-      {forceHttps: true, stripWWW: false},
+      `${subdomain}.${host}/${pageUrl}`,
+      {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
     );
 
     await this.fetchPage(urlNorm);
-
     const {httpSuccess, response} = this.fetchResult;
+
+    const linkSelectors = typeof linkSelector === 'string'
+      ? linkSelector
+      : linkSelector.join(',');
 
     if (httpSuccess) {
       const $ = cheerio.load(response);
       const parsedUrls = [];
-      $(linkSelector).each((i, el) => {
+      $(linkSelectors).each((i, el) => {
         let {href} = el.attribs;
         if (href) {
           if (!isAbsoluteUrl(href)) {
@@ -167,10 +170,10 @@ class Fetcher {
     const {url: articleUrl} = fileContents.articles
       .find(a => a.hash === articleId);
 
-    const {host} = this.fileContents.options;
+    const {host, subdomain = ''} = this.fileContents.options;
     const urlNorm = normalizeUrl(
-      `${host}/${articleUrl}`,
-      {forceHttps: true, stripWWW: false},
+      `${subdomain}.${host}/${articleUrl}`,
+      {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
     );
 
     await this.fetchPage(urlNorm);

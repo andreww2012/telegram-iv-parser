@@ -1,6 +1,7 @@
 const jsonfile = require('jsonfile');
 const chalk = require('chalk');
 const nanoid = require('nanoid');
+const fancylog = require('fancy-log');
 const {Fetcher, generateFetcherJob} = require('./Fetcher');
 const {validateSchema} = require('../schema');
 
@@ -215,10 +216,7 @@ class Parser {
         console.error(chalk.red('[job failed]'), fetcherJobStringified);
       }
     } else {
-      // console.log(this.fileContents);
-      // this.rewriteFile();
-      console.info(chalk.greenBright('Nothing left to parse. Stopping the process'));
-      process.exit(1);
+      fancylog.info(`${this.fileContents.options.host}/${this.fileContents.options.name}: Nothing left to parse.`);
     }
   }
 

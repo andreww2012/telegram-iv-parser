@@ -9,9 +9,6 @@ module.exports = {
 
   async handler() {
     const answers = await inquirer.prompt(addSiteQuestions);
-
     addNewSite(answers);
-
-    console.log(`New site added: ${answers.host}`);
   },
 };

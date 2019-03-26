@@ -1,3 +1,5 @@
+const {exec} = require('child_process');
+const {promisify} = require('util');
 const fs = require('fs');
 const path = require('path');
 const fancylog = require('fancy-log');
@@ -6,6 +8,8 @@ const dateFns = require('date-fns');
 const config = require('../config');
 const {readSite, addFile} = require('../fs');
 const {ReportGenerator} = require('../report/ReportGenerator');
+
+const execAsync = promisify(exec);
 
 /**
  * Generates report(s)
@@ -81,18 +85,30 @@ function makeReport(host = null, ...sections) {
 
   fancylog.info('Reports has been generated');
 
-  const archive = archiver('zip');
-  const stream = fs.createWriteStream(`${defaultDirName}/${defaultDirName}.zip`);
+  fancylog.info('Now generating the archive');
 
-  archive
-    .glob(`${defaultDirName}/**`, false)
-    .on('error', err => console.error(err))
-    .pipe(stream);
-
-  stream.on('close', () => {
-    fancylog.info('ZIP with all the reports generated');
+  execAsync('WinRAR a -IBCK -isnd- report *\\**', {
+    cwd: path.join(process.cwd(), defaultDirName),
+    env: process.env,
+    windowsHide: true,
+  }).then(() => {
+    fancylog.info('RAR with all the data generated');
+  }).catch(err => {
+    fancylog.error('Error during the archiving occured', err);
   });
-  archive.finalize();
+
+  // const archive = archiver('zip');
+  // const stream = fs.createWriteStream(`${defaultDirName}/${defaultDirName}.zip`);
+
+  // archive
+  //   .glob(`${defaultDirName}/**`, false)
+  //   .on('error', err => console.error(err))
+  //   .pipe(stream);
+
+  // stream.on('close', () => {
+  //   fancylog.info('ZIP with all the reports generated');
+  // });
+  // archive.finalize();
 
   // eslint-disable-next-line no-undef
   return path.join(process.cwd(), reportsDir, 'index.html');
