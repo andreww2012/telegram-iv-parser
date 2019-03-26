@@ -136,6 +136,10 @@
         },
         "enabled": {
           "type": "boolean"
+        },
+        "step": {
+          "type": "integer",
+          "minimum": 1
         }
       },
       "required": [

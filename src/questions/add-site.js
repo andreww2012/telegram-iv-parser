@@ -61,6 +61,35 @@ module.exports = [
   },
 
   {
+    name: 'totalNumberOfPages',
+    message: 'As pagination is reversed, you must specify the total number of pages:',
+    filter(input) {
+      return Math.trunc(+input);
+    },
+    validate(input) {
+      return input >= 1;
+    },
+    when({paginationReversed}) {
+      return paginationReversed;
+    },
+  },
+
+  {
+    name: 'paginationStep',
+    message: 'Pagination step (default: 1):',
+    default: 1,
+    filter(input) {
+      return Math.trunc(+input);
+    },
+    validate(input) {
+      return input >= 1;
+    },
+    when({noPagination}) {
+      return !noPagination;
+    },
+  },
+
+  {
     name: 'sectionNames',
     message: 'Unique section name(s) (comma separated):',
     filter(input) {
@@ -113,12 +142,12 @@ module.exports = [
     name: 'firstPageUrl',
     message: 'If the first page is not available by this pattern, specify a different URL for it:',
     default: '',
-    validate(input, {paginationReversed}) {
-      if (paginationReversed && !input) {
-        return 'You must specify this field as pagination is reversed';
-      }
-      return true;
-    },
+    // validate(input, {paginationReversed}) {
+    //   if (paginationReversed && !input) {
+    //     return 'You must specify this field as pagination is reversed';
+    //   }
+    //   return true;
+    // },
     when({noPagination}) {
       return !noPagination;
     },

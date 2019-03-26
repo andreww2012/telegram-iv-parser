@@ -205,7 +205,7 @@
           </thead>
           <tbody>
             {{#each data.unsupported}}
-              {{> tableRow}}
+              {{> tableRow parent=..}}
             {{/each}}
           </tbody>
         </table>
@@ -219,7 +219,7 @@
           </thead>
           <tbody>
             {{#each data.tag}}
-              {{> tableRow}}
+              {{> tableRow parent=..}}
             {{/each}}
           </tbody>
         </table>
@@ -233,7 +233,7 @@
           </thead>
           <tbody>
             {{#each data.attr}}
-              {{> tableRow}}
+              {{> tableRow parent=..}}
             {{/each}}
           </tbody>
         </table>

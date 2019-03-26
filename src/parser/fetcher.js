@@ -74,9 +74,10 @@ class Fetcher {
     const {host, subdomain} = options;
     const {firstPageUrl} = options.section;
     const {totalNumberOfPagesSelector} = options.pagination;
+    const {pagesCount} = this.fileContents.stats;
 
     // Not possible to get
-    if (!totalNumberOfPagesSelector) {
+    if (!totalNumberOfPagesSelector && !pagesCount) {
       this.fetchResult = {};
       this.payload = {
         count: Number.MAX_SAFE_INTEGER,
@@ -138,7 +139,7 @@ class Fetcher {
 
     if (httpSuccess) {
       const $ = cheerio.load(response);
-      const parsedUrls = [];
+      let parsedUrls = [];
       $(linkSelectors).each((i, el) => {
         let {href} = el.attribs;
         if (href) {
@@ -150,6 +151,7 @@ class Fetcher {
           parsedUrls.push(normHostlessUrl);
         }
       });
+      parsedUrls = lodash.uniq(parsedUrls);
       this.payload = {parsedUrls};
 
       if (!parsedUrls.length) {
@@ -288,7 +290,7 @@ class Fetcher {
  * @return {object|null}
  */
 function generateFetcherJob(fileContents) {
-  if (!fileContents.stats.d) {
+  if (!fileContents.stats.pagesCount) {
     return {
       type: Fetcher.fetchTypesEnum.fetchPageCount,
       data: null,
@@ -317,9 +319,12 @@ function generateFetcherJob(fileContents) {
       },
     };
   } else if (pagesFetchedLength < pagesCount) {
-    const pageNum = fileContents.options.pagination.reversed
-      ? pagesCount - pagesFetchedLength
-      : pagesFetchedLength + 1;
+    const {pagination} = fileContents.options;
+    const {reversed, step} = pagination;
+    const paginationStep = step || 1;
+    const pageNum = reversed
+      ? pagesCount - (pagesFetchedLength * paginationStep)
+      : pagesFetchedLength + paginationStep;
     return {
       type: Fetcher.fetchTypesEnum.fetchPageLinks,
       data: {

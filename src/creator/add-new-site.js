@@ -1,3 +1,4 @@
+const fancylog = require('fancy-log');
 const config = require('../config');
 const {addFile} = require('../fs');
 const {validateSchema} = require('../schema');
@@ -15,6 +16,8 @@ function generateSiteFile(answers) {
     subdomain,
     noPagination,
     paginationReversed,
+    totalNumberOfPages,
+    paginationStep,
     sectionName,
     pagePattern,
     firstPageUrl,
@@ -29,6 +32,8 @@ function generateSiteFile(answers) {
     pagesCount = 1;
   } else if (!paginationReversed) {
     pagesCount = Number.MAX_SAFE_INTEGER;
+  } else {
+    pagesCount = totalNumberOfPages;
   }
 
   const structure = {
@@ -45,6 +50,7 @@ function generateSiteFile(answers) {
       pagination: {
         reversed: paginationReversed,
         enabled: !noPagination,
+        step: paginationStep,
       },
 
       page: {
@@ -90,15 +96,18 @@ function addNewSite(answers) {
     const isSchemaValid = validateSchema(fileContents);
 
     if (!isSchemaValid) {
-      console.log(`It it not possible to generate a valid file for ${sectionName} section:`);
-      console.log(validateSchema.errors);
+      fancylog.error(`It it not possible to generate a valid file for ${sectionName} section:`, validateSchema.errors);
     } else {
       const filePath = `${config.dirs.sitesDir}/${host}`;
       const fileName = `${sectionName}.json`;
+      const fullFilePath = `${filePath}/${fileName}`;
 
-      addFile(filePath, fileName, fileContents);
-
-      console.log(`File created: ${filePath}/${fileName}`);
+      try {
+        addFile(filePath, fileName, fileContents);
+        fancylog.info(`File created: ${fullFilePath}`);
+      } catch (error) {
+        fancylog.error(`Error during the creation of the file for ${fullFilePath}:`, error);
+      }
     }
   });
 }
