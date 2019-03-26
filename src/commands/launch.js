@@ -24,11 +24,14 @@ module.exports = {
       sections = files.filter(ssName => ssName.endsWith('.json'));
     }
 
-    sections.forEach(s => {
-      new Parser(
-        `${config.dirs.sitesDir}/${sitename}/${s}`,
-        period,
-      ).startParsingLoop();
+    sections.forEach((sectionName, i) => {
+      const timeout = 1000 * i;
+      setTimeout(() => {
+        new Parser(
+          `${config.dirs.sitesDir}/${sitename}/${sectionName}`,
+          period,
+        ).startParsingLoop();
+      }, timeout);
     });
   },
 };

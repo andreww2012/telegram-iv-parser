@@ -19,10 +19,9 @@ class Parser {
     this.filePath = filePath;
     this.fileContents = jsonfile.readFileSync(this.filePath);
     if (!validateSchema(this.fileContents)) {
-      throw new Error(
-        chalk.red('[error]'),
-        'File structure does not match the schema',
-      );
+      const errorMessage = `${filePath}: File structure does not match the schema`;
+      fancylog.error(errorMessage, validateSchema.errors);
+      throw new Error(errorMessage);
     }
   }
 

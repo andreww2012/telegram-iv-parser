@@ -166,7 +166,6 @@
         }
       },
       "required": [
-        "firstPageUrl",
         "linkSelector",
         "pagePattern"
       ],

@@ -4,7 +4,7 @@ const {addSiteQuestions} = require('../questions');
 
 module.exports = {
   command: 'add',
-  aliases: 'new',
+  aliases: ['a', 'news'],
   describe: 'Adds a new site',
 
   async handler() {

@@ -71,7 +71,7 @@ class Fetcher {
    */
   async fetchPageCount() {
     const {options} = this.fileContents;
-    const {host, subdomain = ''} = options;
+    const {host, subdomain} = options;
     const {firstPageUrl} = options.section;
     const {totalNumberOfPagesSelector} = options.pagination;
 
@@ -85,7 +85,7 @@ class Fetcher {
     }
 
     const urlNorm = normalizeUrl(
-      `${subdomain}.${host}/${firstPageUrl}`,
+      `${subdomain ? subdomain + '.' : ''}${host}/${firstPageUrl}`,
       {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
     );
 
@@ -125,7 +125,7 @@ class Fetcher {
 
     const {host, subdomain = ''} = fileContents.options;
     const urlNorm = normalizeUrl(
-      `${subdomain}.${host}/${pageUrl}`,
+      `${subdomain ? subdomain + '.' : ''}${host}/${pageUrl}`,
       {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
     );
 
@@ -172,7 +172,7 @@ class Fetcher {
 
     const {host, subdomain = ''} = this.fileContents.options;
     const urlNorm = normalizeUrl(
-      `${subdomain}.${host}/${articleUrl}`,
+      `${subdomain ? subdomain + '.' : ''}${host}/${articleUrl}`,
       {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
     );
 

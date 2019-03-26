@@ -4,7 +4,7 @@ const {makeReport} = require('../report');
 
 module.exports = {
   command: 'report [site]',
-  aliases: ['stats', 'csv', 'info'],
+  aliases: ['r'],
   desc: 'Generates report(s) for specified sites (for all sites every minute by default)',
   builder(yargs) {
     yargs
@@ -21,23 +21,31 @@ module.exports = {
         default: 1,
       })
       .option('noopen', {
-        alias: 'n',
+        alias: 'no',
         describe: 'Do not open a browser with the report',
+        type: 'boolean',
+        default: false,
+      })
+      .option('noar', {
+        alias: 'na',
+        describe: 'Do not generate an archive',
         type: 'boolean',
         default: false,
       });
   },
 
-  handler({site, per, noopen}) {
+  handler({site, per, noopen: noOpen, noar: noArchive}) {
     const [host = null, ...sections] = site.split('@');
 
     if (per) {
       fancylog.info(`Report will be generated every ${per} minutes`);
+      fancylog.info(`Browser will be opened: ${!noOpen}`);
+      fancylog.info(`Archive will be generated: ${!noArchive}`);
     }
 
-    const reportPath = makeReport(host, ...sections);
+    const reportPath = makeReport(host, sections, {noArchive});
 
-    if (!noopen) {
+    if (!noOpen) {
       fancylog.info('Opening your browser with the report...');
       opn(`file:///${reportPath}`, {app: 'firefox'});
     }
@@ -45,7 +53,7 @@ module.exports = {
     if (per >= 1) {
       const perMs = per * 60 * 1000;
       setInterval(
-        makeReport.bind(this, host, ...sections),
+        makeReport.bind(this, host, sections, {noArchive}),
         perMs,
       );
     }

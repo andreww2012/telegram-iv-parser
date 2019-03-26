@@ -30,7 +30,7 @@ class ReportGenerator {
     ));
 
     const {fileContents} = this;
-    const {host, name} = fileContents.options;
+    const {host, name, subdomain} = fileContents.options;
     const {parsingResults} = fileContents;
 
     const currDate = new Date();
@@ -41,6 +41,7 @@ class ReportGenerator {
     // eslint-disable-next-line prefer-const
     let reportTemplateContext = {
       host,
+      subdomain,
       sectionName: name,
       date: {
         rawDate: currDate.toISOString(),
@@ -63,15 +64,23 @@ class ReportGenerator {
     });
 
     parsingResults.filter(r => r.articleHash).forEach(result => {
-      delete result.art;
-
-      if (result.articleHash) {
+      result.art = result.art.slice(1, 21).map(artHash => {
         const articleInfo = fileContents.articles
-          .find(a => a.hash === result.articleHash);
-        const fullArticleUrl = normalizeUrl(`${host}/${articleInfo.url}`);
-        result.articleInfo = articleInfo;
-        result.articleUrl = fullArticleUrl;
-      }
+          .find(a => a.hash === artHash);
+        return normalizeUrl(
+          `${subdomain ? subdomain + '.' : ''}${host}/${articleInfo.url}`,
+          {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
+        );
+      });
+
+      const articleInfo = fileContents.articles
+        .find(a => a.hash === result.articleHash);
+      const fullArticleUrl = normalizeUrl(
+        `${subdomain ? subdomain + '.' : ''}${host}/${articleInfo.url}`,
+        {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
+      );
+      result.articleInfo = articleInfo;
+      result.articleUrl = fullArticleUrl;
 
       const {cat: category} = result;
 

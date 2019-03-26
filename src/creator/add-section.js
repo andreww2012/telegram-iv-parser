@@ -10,7 +10,7 @@ const config = require('../config');
 function addSection(sitename, existingSection, newSection) {
   const initialFile = readSite(sitename, existingSection);
 
-  initialFile.options.name = newSection;
+  initialFile.options.name = String(newSection);
   initialFile.stats = {
     pagesCount: 0,
     fileGeneratedDate: new Date().getTime(),
