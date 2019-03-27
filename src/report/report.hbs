@@ -47,11 +47,12 @@
     .fixed-bottom {
       position: fixed;
       z-index: 1;
-      right: 0;
-      bottom: 0;
-      left: 0;
+      bottom: 1em;
+      left: 1em;
+      width: 15%;
+      min-width: 300px;
       padding: 1em;
-      box-shadow: 2px 2px 15px 0 rgba(0, 0, 0, 0.25);
+      box-shadow: 2px 2px 15px 0 rgba(0, 0, 0, 0.3);
     }
   </style>
 
@@ -131,20 +132,18 @@
           </nav>
 
           <div class="fixed-bottom has-background-dark">
-            <div class="container">
-              <div class="field">
-                <label class="label has-text-light">Templates to check</label>
-                <div class="control">
-                  <input class="input is-medium has-background-dark has-text-white" placeholder="12, 15, 28" id="template-num">
-                </div>
+            <div class="field">
+              <label class="label has-text-light">Templates to check</label>
+              <div class="control">
+                <input class="input is-medium has-background-dark has-text-white" placeholder="12, 15, 28" id="template-num">
               </div>
+            </div>
 
-              <div class="content">
-                <p class="has-text-white-ter is-size-7">
-                  This report was formed on
-                  <span class="has-text-warning"><samp>{{date.dayFormatted}} {{date.timeFormatted}}</samp></span>.
-                </p>
-              </div>
+            <div class="content">
+              <p class="has-text-white-ter is-size-7">
+                This report was formed on
+                <span class="has-text-warning"><samp>{{date.dayFormatted}} {{date.timeFormatted}}</samp></span>.
+              </p>
             </div>
           </div>
 
