@@ -2,6 +2,7 @@ const jsonfile = require('jsonfile');
 const chalk = require('chalk');
 const nanoid = require('nanoid');
 const fancylog = require('fancy-log');
+const notifier = require('node-notifier');
 const {Fetcher, generateFetcherJob} = require('./Fetcher');
 const {validateSchema} = require('../schema');
 
@@ -18,6 +19,7 @@ class Parser {
     this.period = +period || 0;
     this.filePath = filePath;
     this.fileContents = jsonfile.readFileSync(this.filePath);
+    this.failedInarow = 0;
     if (!validateSchema(this.fileContents)) {
       const errorMessage = `${filePath}: File structure does not match the schema`;
       fancylog.error(errorMessage, validateSchema.errors);
@@ -208,11 +210,35 @@ class Parser {
       }
 
       if (fetcher.payload) {
+        if (this.failedInarow > 0) {
+          notifier.notify({
+            title: `Job ${fetcherJobStringified} COMPLETED after a failure`,
+          });
+        }
+
         await this.processFetchResult(fetcherJob, fetcher);
         console.info(chalk.greenBright('[job done]'), fetcherJobStringified);
         setTimeout(this.parse.bind(this), this.period);
+        this.failedInarow = 0;
       } else {
-        console.error(chalk.red('[job failed]'), fetcherJobStringified);
+        const timeoutSec = 10 + 2 ** this.failedInarow;
+
+        fancylog.error(
+          `Job ${fetcherJobStringified} FAILED by the following reason:\n`,
+          fetcher.fetchResult,
+          `\nJob will be restarted in ${timeoutSec} seconds...`,
+        );
+
+        if (this.failedInarow === 0) {
+          notifier.notify({
+            title: `Job ${fetcherJobStringified} FAILED for the first time`,
+            message: 'Notification will be set when the job is done',
+            sound: true,
+          });
+        }
+
+        setTimeout(this.parse.bind(this), timeoutSec * 1000);
+        this.failedInarow += 1;
       }
     } else {
       fancylog.info(`${this.fileContents.options.host}/${this.fileContents.options.name}: Nothing left to parse.`);

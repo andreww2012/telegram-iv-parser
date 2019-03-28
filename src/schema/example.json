@@ -1,8 +1,9 @@
 {
   "options": {
     "host": "test.ru",
-    "subdomain": "",
+    "subdomain": "www",
     "name": "allnews",
+    "httpOnly": false,
 
     "section": {
       "pagePattern": "news/page/{0}.html",

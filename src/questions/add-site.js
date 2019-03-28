@@ -36,12 +36,12 @@ module.exports = [
     },
   },
 
-  // {
-  //   name: 'httpOnly',
-  //   message: 'Site available only through http? (default = NO):',
-  //   type: 'confirm',
-  //   default: false,
-  // },
+  {
+    name: 'httpOnly',
+    message: 'Site available only through http? (default = NO):',
+    type: 'confirm',
+    default: false,
+  },
 
   {
     name: 'noPagination',

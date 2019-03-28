@@ -6,6 +6,11 @@ const lodash = require('lodash');
 const isAbsoluteUrl = require('is-absolute-url');
 const {unsupportedPairs, tagsToIgnore, classesToIgnore} = require('./meta');
 
+const urlNormalizerOptions = {
+  stripWWW: false,
+  removeTrailingSlash: false,
+};
+
 /**
  * Just fetcher
  */
@@ -35,10 +40,16 @@ class Fetcher {
   /**
    * @private
    * Fetches the specified page
-   * @param {string} url normalized url
+   * @param {string} urlRel relative url
    */
-  async fetchPage(url) {
+  async fetchPage(urlRel) {
     try {
+      const {subdomain, host, httpOnly} = this.fileContents.options;
+
+      const fullRawUrl = `http${!httpOnly ? 's' : ''}://${subdomain ? subdomain + '.' : ''}${host}/${urlRel}`;
+
+      const url = normalizeUrl(fullRawUrl, urlNormalizerOptions);
+
       console.log(`[fetching] ${url}`);
 
       const response = await axios({
@@ -71,7 +82,6 @@ class Fetcher {
    */
   async fetchPageCount() {
     const {options} = this.fileContents;
-    const {host, subdomain} = options;
     const {firstPageUrl} = options.section;
     const {totalNumberOfPagesSelector} = options.pagination;
     const {pagesCount} = this.fileContents.stats;
@@ -85,12 +95,7 @@ class Fetcher {
       return;
     }
 
-    const urlNorm = normalizeUrl(
-      `${subdomain ? subdomain + '.' : ''}${host}/${firstPageUrl}`,
-      {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
-    );
-
-    await this.fetchPage(urlNorm);
+    await this.fetchPage(firstPageUrl);
 
     const {httpSuccess, response} = this.fetchResult;
 
@@ -124,13 +129,10 @@ class Fetcher {
       ? firstPageUrl
       : pagePattern.replace('{0}', pageNum);
 
-    const {host, subdomain = ''} = fileContents.options;
-    const urlNorm = normalizeUrl(
-      `${subdomain ? subdomain + '.' : ''}${host}/${pageUrl}`,
-      {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
-    );
+    const {host} = fileContents.options;
 
-    await this.fetchPage(urlNorm);
+    await this.fetchPage(pageUrl);
+
     const {httpSuccess, response} = this.fetchResult;
 
     const linkSelectors = typeof linkSelector === 'string'
@@ -146,7 +148,7 @@ class Fetcher {
           if (!isAbsoluteUrl(href)) {
             href = `${host}/${href}`;
           }
-          const urlInfo = new URL(normalizeUrl(href));
+          const urlInfo = new URL(normalizeUrl(href, urlNormalizerOptions));
           const normHostlessUrl = `${urlInfo.pathname}${urlInfo.search}`;
           parsedUrls.push(normHostlessUrl);
         }
@@ -172,13 +174,7 @@ class Fetcher {
     const {url: articleUrl} = fileContents.articles
       .find(a => a.hash === articleId);
 
-    const {host, subdomain = ''} = this.fileContents.options;
-    const urlNorm = normalizeUrl(
-      `${subdomain ? subdomain + '.' : ''}${host}/${articleUrl}`,
-      {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
-    );
-
-    await this.fetchPage(urlNorm);
+    await this.fetchPage(articleUrl);
 
     const {httpSuccess, response} = this.fetchResult;
 

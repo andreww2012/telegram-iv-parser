@@ -14,6 +14,7 @@ function generateSiteFile(answers) {
   const {
     host,
     subdomain,
+    httpOnly,
     noPagination,
     paginationReversed,
     totalNumberOfPages,
@@ -72,6 +73,10 @@ function generateSiteFile(answers) {
 
   if (subdomain) {
     structure.options.subdomain = subdomain;
+  }
+
+  if (httpOnly) {
+    structure.options.httpOnly = true;
   }
 
   return structure;
