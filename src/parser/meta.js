@@ -42,5 +42,5 @@ exports.tagsToIgnore = [
 
 exports.classesToIgnore = [
   /jsx-\d{6,}/i,
-  /wp-image-\d{2,}/i,
+  /(wp-image|post|td-nr-views)-\d{2,}/i,
 ];
