@@ -30,7 +30,7 @@ class ReportGenerator {
     ));
 
     const {fileContents} = this;
-    const {host, name, subdomain} = fileContents.options;
+    const {host, name, subdomain, httpOnly} = fileContents.options;
     const {parsingResults} = fileContents;
 
     const currDate = new Date();
@@ -68,16 +68,16 @@ class ReportGenerator {
         const articleInfo = fileContents.articles
           .find(a => a.hash === artHash);
         return normalizeUrl(
-          `${subdomain ? subdomain + '.' : ''}${host}/${articleInfo.url}`,
-          {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
+          `http${httpOnly ? '' : 's'}://${subdomain ? subdomain + '.' : ''}${host}/${articleInfo.url}`,
+          {stripWWW: false, removeTrailingSlash: false},
         );
       });
 
       const articleInfo = fileContents.articles
         .find(a => a.hash === result.articleHash);
       const fullArticleUrl = normalizeUrl(
-        `${subdomain ? subdomain + '.' : ''}${host}/${articleInfo.url}`,
-        {forceHttps: true, stripWWW: false, removeTrailingSlash: false},
+        `http${httpOnly ? '' : 's'}://${subdomain ? subdomain + '.' : ''}${host}/${articleInfo.url}`,
+        {stripWWW: false, removeTrailingSlash: false},
       );
       result.articleInfo = articleInfo;
       result.articleUrl = fullArticleUrl;
