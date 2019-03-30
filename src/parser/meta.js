@@ -1,6 +1,6 @@
 const unsupportedCombinationsDescription = [
   [
-    ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'em', 'i', 's', 'u', 'footer', 'mark', 'ul', 'ol', 'figcaption', 'summary', 'sup', 'sub', 'table'],
+    ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'em', 'i', 's', 'u', 'footer', 'mark', 'ul', 'ol', 'figcaption', 'summary', 'sup', 'sub', 'table', 'pre', 'code', 'samp'],
     ['img', 'video', 'iframe', 'audio', 'footer'],
   ],
   [
@@ -12,7 +12,7 @@ const unsupportedCombinationsDescription = [
     ['aside', 'blockquote', 'figure', 'picture', 'table'],
   ],
   [
-    ['blockquote', 'aside', 'img', 'source', 'picture', 'iframe', 'video', 'audio', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'figcaption', 'figure', 'table'],
+    ['blockquote', 'aside', 'img', 'source', 'picture', 'iframe', 'video', 'audio', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'figcaption', 'figure', 'table', 'pre', 'code', 'samp'],
   ],
 ];
 
