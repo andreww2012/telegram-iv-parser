@@ -143,6 +143,9 @@
         "step": {
           "type": "integer",
           "minimum": 1
+        },
+        "transform": {
+          "type": "string"
         }
       },
       "required": [

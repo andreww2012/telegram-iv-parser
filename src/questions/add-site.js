@@ -90,6 +90,14 @@ module.exports = [
   },
 
   {
+    name: 'paginationTransform',
+    message: 'date-fns format to transforming pagination (presented as unix timestamp) into the date string:',
+    when({noPagination, paginationReversed}) {
+      return !noPagination && paginationReversed;
+    },
+  },
+
+  {
     name: 'sectionNames',
     message: 'Unique section name(s) (comma separated):',
     filter(input) {

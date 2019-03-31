@@ -4,6 +4,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const lodash = require('lodash');
 const isAbsoluteUrl = require('is-absolute-url');
+const {format} = require('date-fns');
 const {unsupportedPairs, tagsToIgnore, classesToIgnore} = require('./meta');
 
 const urlNormalizerOptions = {
@@ -115,7 +116,10 @@ class Fetcher {
    */
   async fetchPageLinks({pageNum}) {
     const {fileContents} = this;
-    const isFirstPage = fileContents.options.pagination.reversed
+    const {options} = fileContents;
+    const {reversed, transform} = options.pagination;
+
+    const isFirstPage = reversed
       ? pageNum === fileContents.stats.pagesCount
       : pageNum === 1;
 
@@ -125,9 +129,13 @@ class Fetcher {
       linkSelector,
     } = fileContents.options.section;
 
+    const pageNumTransformed = transform
+      ? format(new Date(+pageNum), transform)
+      : pageNum;
+
     const pageUrl = (isFirstPage && firstPageUrl)
       ? firstPageUrl
-      : pagePattern.replace('{0}', pageNum);
+      : pagePattern.replace('{0}', pageNumTransformed);
 
     const {host} = fileContents.options;
 

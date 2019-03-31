@@ -19,6 +19,7 @@ function generateSiteFile(answers) {
     paginationReversed,
     totalNumberOfPages,
     paginationStep,
+    paginationTransform,
     sectionName,
     pagePattern,
     firstPageUrl,
@@ -77,6 +78,10 @@ function generateSiteFile(answers) {
 
   if (httpOnly) {
     structure.options.httpOnly = true;
+  }
+
+  if (paginationTransform) {
+    structure.options.pagination.transform = paginationTransform;
   }
 
   return structure;
