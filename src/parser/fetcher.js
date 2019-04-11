@@ -65,6 +65,7 @@ class Fetcher {
         requestSuccess: true,
         httpSuccess: (status >= 200 && status < 300
           || status === 404
+          || status === 403
           || status === 410),
         status,
         response: data,
