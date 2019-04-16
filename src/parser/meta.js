@@ -8,7 +8,7 @@ const unsupportedCombinationsDescription = [
     ['img', 'video', 'audio', 'iframe', 'table'],
   ],
   [
-    ['ul', 'ol', 'figcaption', 'a'],
+    ['ul', 'ol', 'figcaption', 'a', 'table'],
     ['aside', 'blockquote', 'figure', 'picture', 'table'],
   ],
   [
@@ -42,5 +42,5 @@ exports.tagsToIgnore = [
 
 exports.classesToIgnore = [
   /jsx-\d{6,}/i,
-  /(wp-image|post|td-nr-views)-\d{2,}/i,
+  /(wp-image|post|td-nr-views|vuukle-powerbar)-\d{2,}/i,
 ];
