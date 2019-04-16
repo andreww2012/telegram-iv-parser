@@ -100,6 +100,7 @@ module.exports = [
   {
     name: 'sectionNames',
     message: 'Unique section name(s) (comma separated):',
+    default: 'news',
     filter(input) {
       return parseList(input);
     },
