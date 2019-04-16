@@ -329,7 +329,8 @@ function generateFetcherJob(fileContents) {
     const paginationStep = step || 1;
     const pageNum = reversed
       ? pagesCount - (pagesFetchedLength * paginationStep)
-      : pagesFetchedLength + paginationStep;
+      : (pagesFetchedLength + 1) * paginationStep;
+
     return {
       type: Fetcher.fetchTypesEnum.fetchPageLinks,
       data: {
