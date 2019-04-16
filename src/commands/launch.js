@@ -24,14 +24,24 @@ module.exports = {
       sections = files.filter(ssName => ssName.endsWith('.json'));
     }
 
+    let parsers = [];
+
     sections.forEach((sectionName, i) => {
       const timeout = 1000 * i;
+      const parser = new Parser(
+        `${config.dirs.sitesDir}/${sitename}/${sectionName}`,
+        period,
+      );
+      parsers.push(parser);
+
       setTimeout(() => {
-        new Parser(
-          `${config.dirs.sitesDir}/${sitename}/${sectionName}`,
-          period,
-        ).startParsingLoop();
+        parser.startParsingLoop();
       }, timeout);
+    });
+
+    process.on('SIGINT', () => {
+      parsers.forEach(parser => parser.stopParsingLoop());
+      process.exit(0);
     });
   },
 };

@@ -16,6 +16,7 @@ class Parser {
    * @param {number} period fetch frequency in ms (default: 0)
    */
   constructor(filePath, period) {
+    this.stopped = true;
     this.period = +period || 0;
     this.filePath = filePath;
     this.fileContents = jsonfile.readFileSync(this.filePath);
@@ -218,7 +219,11 @@ class Parser {
 
         await this.processFetchResult(fetcherJob, fetcher);
         console.info(chalk.greenBright('[job done]'), fetcherJobStringified);
-        setTimeout(this.parse.bind(this), this.period);
+
+        if (!this.stopped) {
+          setTimeout(this.parse.bind(this), this.period);
+        }
+
         this.failedInarow = 0;
       } else {
         const timeoutSec = 10 + 2 ** this.failedInarow;
@@ -237,11 +242,14 @@ class Parser {
           });
         }
 
-        setTimeout(this.parse.bind(this), timeoutSec * 1000);
+        if (!this.stopped) {
+          setTimeout(this.parse.bind(this), timeoutSec * 1000);
+        }
+
         this.failedInarow += 1;
       }
     } else {
-      fancylog.info(`${this.fileContents.options.host}/${this.fileContents.options.name}: Nothing left to parse.`);
+      console.log(`${this.fileContents.options.host}/${this.fileContents.options.name}: No pages left to parse.`);
     }
   }
 
@@ -252,10 +260,19 @@ class Parser {
   startParsingLoop() {
     try {
       console.info(chalk.blue(`Parsing is starting, period=${this.period}`));
+      this.stopped = false;
       this.parse();
     } catch (error) {
       console.error(chalk.red('An error occured during the parsing:'), error);
     }
+  }
+
+  /**
+   * @public
+   * Stops parsing loop
+   */
+  stopParsingLoop() {
+    this.stopped = true;
   }
 }
 
