@@ -150,7 +150,8 @@
           <div class="tabs is-boxed is-centered" id="tabs">
             <ul>
               <li class="is-active" data-tab="class"><a>Classes</a></li>
-              <li data-tab="unsupported"><a>Unsupported elements</a></li>
+              <li data-tab="id"><a>IDs</a></li>
+              <li data-tab="unsupported"><a>Unsupported combinations</a></li>
               <li data-tab="tag"><a>Tags</a></li>
               <li data-tab="attr"><a>Attributes</a></li>
             </ul>
@@ -164,9 +165,20 @@
         <td><samp>{{name}}</samp></td>
         <td><span class="tag is-medium is-rounded is-info">{{count}}</span></td>
         <td>
+          {{#if articleInfo.meta.metaTags.og:image}}
+            <p>
+              <img src="{{articleInfo.meta.metaTags.og:image}}" width="300" alt="{{articleInfo.meta.metaTags.og:image}}">
+            </p>
+          {{/if}}
           <a class="site-link" href="{{articleUrl}}" target="_blank">{{articleUrl}}</a>
+          <p class="is-size-7 has-text-weight-bold">Meta tags</p>
+          {{#each articleInfo.meta.metaTags}}
+            <p class="has-text-grey is-size-7"><span class="tag is-small">{{@key}}</span> {{this}}</p>
+          {{/each}}
+
+          <p class="is-size-7 has-text-weight-bold">Similar pages</p>
           {{#each art}}
-            <p class="site-link is-size-7"><a href="{{.}}">{{.}}</a></p>
+            <p class="site-link is-size-7"><a href="{{.}}" target="_blank">{{.}}</a></p>
           {{/each}}
         </td>
         <td>
@@ -190,6 +202,20 @@
           </thead>
           <tbody>
             {{#each data.class}}
+              {{> tableRow parent=..}}
+            {{/each}}
+          </tbody>
+        </table>
+
+        <table class="table is-bordered is-striped is-hoverable is-fullwidth" data-elem="id">
+          <thead>
+            <th width="30%">Name</th>
+            <th>Count</th>
+            <th width="50%">Link</th>
+            <th width="20%">Check templates</th>
+          </thead>
+          <tbody>
+            {{#each data.id}}
               {{> tableRow parent=..}}
             {{/each}}
           </tbody>

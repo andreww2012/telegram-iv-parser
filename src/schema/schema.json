@@ -64,6 +64,9 @@
         },
         "d": {
           "type": "integer"
+        },
+        "meta": {
+          "$ref": "#/definitions/Meta"
         }
       },
       "required": [
@@ -76,6 +79,11 @@
         "url"
       ],
       "title": "Article"
+    },
+    "Meta": {
+      "type": "object",
+      "additionalProperties": true,
+      "title": "Meta"
     },
     "Options": {
       "type": "object",

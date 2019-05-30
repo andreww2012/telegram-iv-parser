@@ -5,7 +5,7 @@ const unsupportedCombinationsDescription = [
   ],
   [
     ['blockquote', 'aside', 'a'],
-    ['img', 'video', 'audio', 'iframe', 'table'],
+    ['img', 'video', 'audio', 'iframe', 'table', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
   ],
   [
     ['ul', 'ol', 'figcaption', 'a', 'table'],
@@ -43,4 +43,6 @@ exports.tagsToIgnore = [
 exports.classesToIgnore = [
   /jsx-\d{6,}/i,
   /(wp-image|post|td-nr-views|vuukle-powerbar)-\d{2,}/i,
+  /(grofile-hash-map)-\w{2,}/i,
+  /td_uid_\d+_\w{2,}.*/i,
 ];

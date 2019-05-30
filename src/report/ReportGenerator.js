@@ -54,6 +54,7 @@ class ReportGenerator {
     parsingResults.forEach(r => r.articleHash = r.art[0]);
 
     const linksByCategory = {};
+
     [...new Set(parsingResults.map(r => r.cat))]
       .forEach(cat => linksByCategory[cat] = []);
 

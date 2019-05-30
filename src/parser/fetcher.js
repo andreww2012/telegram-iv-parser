@@ -157,9 +157,13 @@ class Fetcher {
           if (!isAbsoluteUrl(href)) {
             href = `${host}/${href}`;
           }
-          const urlInfo = new URL(normalizeUrl(href, urlNormalizerOptions));
-          const normHostlessUrl = `${urlInfo.pathname}${urlInfo.search}`;
-          parsedUrls.push(normHostlessUrl);
+          try {
+            const urlInfo = new URL(normalizeUrl(href, urlNormalizerOptions));
+            const normHostlessUrl = `${urlInfo.pathname}${urlInfo.search}`;
+            parsedUrls.push(normHostlessUrl);
+          } catch (error) {
+            // Incorrect URL. Doing nothing.
+          }
         }
       });
       parsedUrls = lodash.uniq(parsedUrls);
@@ -191,20 +195,21 @@ class Fetcher {
       const {articleBodySelector, ignoreSelectors} = fileContents.options.page;
       const $ = cheerio.load(response);
 
-      let bodyElementsColleciton = $('*', articleBodySelector);
+      let bodyElementsCollection = $('*', articleBodySelector);
 
       ignoreSelectors.forEach(selectorThatMustBeIgnored => {
-        bodyElementsColleciton = bodyElementsColleciton
+        bodyElementsCollection = bodyElementsCollection
           .not(selectorThatMustBeIgnored);
       });
 
-      const bodyTags = [].slice.call(bodyElementsColleciton)
+      const bodyTags = [].slice.call(bodyElementsCollection)
         .filter(e => e.type === 'tag');
 
+      const classes = new Set();
+      const ids = new Set();
+      const unsupported = new Set();
       const tags = new Set();
       const attrs = new Set();
-      const classes = new Set();
-      const unsupported = new Set();
 
       bodyTags.forEach(el => {
         const {name, attribs} = el;
@@ -213,6 +218,8 @@ class Fetcher {
         Object.keys(attribs).forEach(attr => {
           if (attr === 'class') {
             classes.add(...attribs[attr].split(' ').map(cl => `${cl}/${name}`));
+          } else if (attr === 'id') {
+            ids.add(`${attribs[attr]}/${name}`);
           } else {
             attrs.add(`${attr}/${name}`);
           }
@@ -236,16 +243,21 @@ class Fetcher {
 
       const classesNormalized = [...classes].filter(className => {
         return className
+          && className.split('/')[0]
           && !classesToIgnore.some(classRegex => classRegex.test(className));
       });
 
       const unsupportedNormalized = [...unsupported].filter(e => e);
 
+      const idsNormalized = [...ids].filter(e => e && e.split('/')[0]);
+
       this.payload = {
-        tags: tagsNormalized,
-        attrs: attrsNormalized,
+        cheerioHtml: $,
         classes: classesNormalized,
+        ids: idsNormalized,
+        tags: tagsNormalized,
         unsupported: unsupportedNormalized,
+        attrs: attrsNormalized,
       };
     } else {
       this.payload = null;

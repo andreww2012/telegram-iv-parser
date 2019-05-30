@@ -2,8 +2,6 @@ const {exec} = require('child_process');
 const {promisify} = require('util');
 const fs = require('fs');
 const path = require('path');
-const fancylog = require('fancy-log');
-// const archiver = require('archiver');
 const dateFns = require('date-fns');
 const config = require('../config');
 const {readSite, addFile} = require('../fs');
@@ -18,33 +16,36 @@ const execAsync = promisify(exec);
  * @param {object} options list of options: noArchive
  * @return {string} full path to the main report file
  */
-function makeReport(host = null, sections, {noArchive}) {
-  fancylog.info(`Forming report for host=${host || 'ALL'}, section=${sections.length ? sections : 'ALL'}`);
-
-  const {sitesDir, reportsDir, defaultDirName} = config.dirs;
-  let hosts = [];
-  let singleHost = false;
-
-  if (host) {
-    hosts = [host];
-    singleHost = true;
-  } else {
-    hosts = fs.readdirSync(sitesDir);
+function makeReport(host = null, sections, {archive}) {
+  if (!sections) {
+    sections = [];
   }
 
-  hosts = [...new Set(hosts)];
+  console.log(`Generating report(s) for
+    host: ${host || 'all hosts'},
+    sections: ${sections.length ? sections.join(', ') : 'all sections'}
+  `);
+
+  const {sitesDir, reportsDir, defaultDirName} = config.dirs;
+
+  const allHosts = fs.readdirSync(sitesDir);
+
+  const hosts = [...new Set(host ? [host] : allHosts)];
 
   const datetime = dateFns.format(new Date(), 'DD.MM.YYYY HH:mm:ss');
 
   let hostsHtml = `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css"><style>a:visited{color: red !important;}a:focus{outline: 4px solid greenyellow !important;}</style><div class="container"><section class="section"><nav class="breadcrumb is-large"><ul><li>All sites</li></ul></nav><div class="content"><p><code>${datetime}</code></p><ul>`;
 
+  allHosts.forEach(hostName => {
+    hostsHtml += `<li><a href="${hostName}/index.html">${hostName}</a></li>`;
+  });
+
   for (let i = 0; i < hosts.length; i++) {
     const hostName = hosts[i];
 
-    hostsHtml += `<li><a href="${hostName}/index.html">${hostName}</a></li>`;
     let sectionsHtml = `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css"><style>a:visited{color: red !important;}a:focus{outline: 4px solid greenyellow !important;}</style><div class="container"><section class="section"><nav class="breadcrumb is-large"><ul><li><a href="../index.html">All sites</a></li><li class="is-active"><a>${hostName}</a></li></ul></nav><div class="content"><p><code>${datetime}</code></p><ul>`;
 
-    let siteSections = singleHost
+    let siteSections = sections.length
       ? sections
       : fs.readdirSync(`${sitesDir}/${hostName}`);
 
@@ -62,7 +63,7 @@ function makeReport(host = null, sections, {noArchive}) {
       const fileContents = readSite(hostName, siteSectionName);
 
       if (!fileContents) {
-        fancylog.warn(`Omitting ${hostName}/${siteSectionName} because of the error...`);
+        console.log(`Omitting ${hostName}/${siteSectionName} because of the error...`);
         continue;
       }
 
@@ -78,43 +79,30 @@ function makeReport(host = null, sections, {noArchive}) {
     }
 
     sectionsHtml += '</ul>';
+
     addFile(`${reportsDir}/${hostName}`, 'index.html', sectionsHtml, true);
   }
 
   hostsHtml += '</ul><p><a href="../report.rar" class="button is-primary">Download all reports as an archive</a></p>';
+
   addFile(reportsDir, 'index.html', hostsHtml, true);
 
-  fancylog.info('Reports has been generated');
+  console.log('Reports has been generated');
 
-
-  if (!noArchive) {
-    fancylog.info('Now generating the archive');
+  if (archive) {
+    console.log('Generating the archive (it may take a while)...');
 
     execAsync('WinRAR a -IBCK -isnd- report *\\**', {
       cwd: path.join(process.cwd(), defaultDirName),
       env: process.env,
       windowsHide: true,
     }).then(() => {
-      fancylog.info('RAR with all the data generated');
+      console.log('RAR with all the data generated');
     }).catch(err => {
-      fancylog.error('Error during the archiving occured', err);
+      console.log('Error during the archiving occured', err);
     });
   }
 
-  // const archive = archiver('zip');
-  // const stream = fs.createWriteStream(`${defaultDirName}/${defaultDirName}.zip`);
-
-  // archive
-  //   .glob(`${defaultDirName}/**`, false)
-  //   .on('error', err => console.error(err))
-  //   .pipe(stream);
-
-  // stream.on('close', () => {
-  //   fancylog.info('ZIP with all the reports generated');
-  // });
-  // archive.finalize();
-
-  // eslint-disable-next-line no-undef
   return path.join(process.cwd(), reportsDir, 'index.html');
 }
 

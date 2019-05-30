@@ -6,6 +6,9 @@ module.exports = {
   describe: 'Adds a file section based on a specified one',
 
   handler({sitename, section, newsection}) {
-    addSection(sitename, section, newsection);
+    newsection.split(',')
+      .map(n => n.trim())
+      .filter(n => n)
+      .forEach(sectionName => addSection(sitename, section, sectionName));
   },
 };

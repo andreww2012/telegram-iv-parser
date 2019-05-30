@@ -88,25 +88,45 @@ class Parser {
 
     if (fetcherJob.type === Fetcher.fetchTypesEnum.fetchArticle) {
       const {articleId} = jobData;
-      const {tags, attrs, classes, unsupported} = payload;
+      const {cheerioHtml, classes, ids, unsupported, tags, attrs} = payload;
+
+      const metaTags = [].slice.call(
+        cheerioHtml(`meta[property*="description"],
+          meta[name*="description"],
+          meta[property*="author"],
+          meta[name*="author"],
+          meta[property*="date"],
+          meta[name*="date"],
+          meta[property*="time"],
+          meta[name*="time"],
+          meta[property*="image"],
+          meta[name*="image"]`, 'html head')
+      ).reduce((meta, {attribs}) => {
+        meta[attribs.name || attribs.property] = attribs.content;
+        return meta;
+      }, {});
 
       const articleInfo = fileContents.articles.find(a => a.hash === articleId);
 
       articleInfo.d = new Date().getTime();
       articleInfo.parsed = true;
+      articleInfo.meta = {...(articleInfo.meta || {}), metaTags};
 
       const {parsingResults: pr} = fileContents;
-      const existingTags = [
-        ...new Set(pr.filter(r => r.cat === 'tag').map(t => t.name)),
-      ];
       const existingClasses = [
         ...new Set(pr.filter(r => r.cat === 'class').map(t => t.name)),
       ];
-      const existingAttrs = [
-        ...new Set(pr.filter(r => r.cat === 'attr').map(t => t.name)),
+      const existingIds = [
+        ...new Set(pr.filter(r => r.cat === 'id').map(t => t.name)),
       ];
       const existingUnsupported = [
         ...new Set(pr.filter(r => r.cat === 'unsupported').map(t => t.name)),
+      ];
+      const existingTags = [
+        ...new Set(pr.filter(r => r.cat === 'tag').map(t => t.name)),
+      ];
+      const existingAttrs = [
+        ...new Set(pr.filter(r => r.cat === 'attr').map(t => t.name)),
       ];
 
       tags.forEach(tagName => {
@@ -135,6 +155,22 @@ class Parser {
             cat: 'class',
             info: {},
             name: className,
+            count: 1,
+            art: [articleId],
+          });
+        }
+      });
+
+      ids.forEach(idName => {
+        if (existingIds.includes(idName)) {
+          const info = pr.find(t => t.cat === 'id' && t.name === idName);
+          info.count = info.count + 1;
+          info.art.push(articleId);
+        } else {
+          pr.push({
+            cat: 'id',
+            info: {},
+            name: idName,
             count: 1,
             art: [articleId],
           });

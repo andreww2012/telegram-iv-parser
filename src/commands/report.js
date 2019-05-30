@@ -5,57 +5,70 @@ const {makeReport} = require('../report');
 module.exports = {
   command: 'report [site]',
   aliases: ['r'],
-  desc: 'Generates report(s) for specified sites (for all sites every minute by default)',
+  desc: 'Generates report(s) for specified sites',
   builder(yargs) {
     yargs
       .positional('site', {
-        describe: `Generate report(s) only for a specific site.
-          Formats: example.com, example.com@section1@seciton2`,
+        describe: `Generate report(s) only for specific sites.
+          Formats: example1.com example2.com@section1@seciton2 example3`,
         type: 'string',
         default: '',
       })
       .option('per', {
         alias: 'p',
-        describe: 'Generate report(s) every [per] minute(s), 1 minute at min',
+        describe: 'Generate report(s) every [per] minute(s), 1 minute at min (default: every 2 minutes)',
         type: 'number',
-        default: 1,
+        default: 2,
       })
-      .option('noopen', {
-        alias: 'no',
-        describe: 'Do not open a browser with the report',
+      .option('open', {
+        alias: 'o',
+        describe: 'Open a browser with the report after the generation',
         type: 'boolean',
         default: false,
       })
-      .option('noar', {
-        alias: 'na',
-        describe: 'Do not generate an archive',
+      .option('archive', {
+        alias: 'a',
+        describe: 'Generate the archive after the first report generation',
         type: 'boolean',
         default: false,
       });
   },
 
-  handler({site, per, noopen: noOpen, noar: noArchive}) {
-    const [host = null, ...sections] = site.split('@');
+  handler({site, per, open, archive}) {
+    const hosts = site.split(' ').filter(s => s);
 
     if (per) {
-      fancylog.info(`Report will be generated every ${per} minutes`);
-      fancylog.info(`Browser will be opened: ${!noOpen}`);
-      fancylog.info(`Archive will be generated: ${!noArchive}`);
+      console.log(`Report will be generated every ${per} minutes`);
+      console.log(`Browser will be opened: ${open}`);
+      console.log(`Archive will be generated: ${archive}`);
     }
 
-    const reportPath = makeReport(host, sections, {noArchive});
+    let reportPath;
 
-    if (!noOpen) {
+    /**
+     * Generates all the reports.
+     */
+    function generateReports() {
+      if (hosts.length) {
+        hosts.forEach(hostAndSections => {
+          const [host, ...sections] = hostAndSections.split('@');
+          reportPath = makeReport(host, sections, {archive});
+        });
+      } else {
+        reportPath = makeReport(null, null, {archive});
+      }
+    }
+
+    generateReports();
+
+    if (open) {
       fancylog.info('Opening your browser with the report...');
       opn(`file:///${reportPath}`, {app: 'firefox'});
     }
 
     if (per >= 1) {
       const perMs = per * 60 * 1000;
-      setInterval(
-        makeReport.bind(this, host, sections, {noArchive}),
-        perMs,
-      );
+      setInterval(generateReports, perMs);
     }
   },
 };

@@ -50,6 +50,7 @@
     {
       "hash": "lGm8M6aggLbMjIHt",
       "url": "/news/test/123456789.html",
+      "meta": {},
       "fromPage": 15,
       "code": 200,
       "parsed": true,
